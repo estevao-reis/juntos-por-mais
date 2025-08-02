@@ -1,7 +1,9 @@
 import { AnnouncementForm } from "@/components/AnnouncementForm";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { AnnouncementCard } from "@/components/AnnouncementCard";
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient();
@@ -16,32 +18,33 @@ export default async function AnnouncementsPage() {
 
   return (
     <div className="container mx-auto p-8 grid gap-12">
-      <div>
-        <h1 className="text-3xl font-bold">Enviar Novo Aviso</h1>
-        <p className="text-muted-foreground mt-2">A mensagem será enviada para todos os líderes.</p>
-        <div className="mt-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Gerenciar Avisos</h1>
+          <p className="text-muted-foreground mt-2">Envie, edite ou exclua comunicados para os líderes.</p>
+        </div>
+        <Link href="/admin/dashboard">
+          <Button variant="outline">Voltar para o Relatório</Button>
+        </Link>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div>
+          <h2 className="text-2xl font-bold mb-6">Novo Comunicado</h2>
           <AnnouncementForm />
         </div>
-      </div>
 
-      <div>
-        <h2 className="text-2xl font-bold">Avisos Enviados</h2>
-        <div className="mt-6 grid gap-4">
-          {announcements && announcements.length > 0 ? (
-            announcements.map(announcement => (
-              <Card key={announcement.id}>
-                <CardHeader>
-                  <CardDescription>
-                    Enviado em {new Date(announcement.created_at).toLocaleString('pt-BR')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {announcement.content}
-                </CardContent>
-              </Card>
-          )) ) : (
-            <p className="text-muted-foreground text-center py-4">Nenhum aviso enviado ainda.</p>
-          )}
+        <div>
+          <h2 className="text-2xl font-bold mb-6">Avisos Enviados</h2>
+          <div className="grid gap-4">
+            {announcements && announcements.length > 0 ? (
+              announcements.map(announcement => (
+                <AnnouncementCard key={announcement.id} announcement={announcement} />
+              ))
+            ) : (
+              <p className="text-muted-foreground text-center py-4">Nenhum aviso enviado ainda.</p>
+            )}
+          </div>
         </div>
       </div>
     </div>

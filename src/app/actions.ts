@@ -81,3 +81,50 @@ export async function sendAnnouncement(formData: FormData): Promise<ActionResult
   revalidatePath('/painel');
   return { success: true, message: 'Aviso enviado com sucesso!' };
 }
+
+export async function updateAnnouncement(formData: FormData): Promise<ActionResult> {
+  const supabase = await createClient();
+  
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: 'Acesso negado.' };
+  const { data: profile } = await supabase.from('Users').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'ADMIN') return { success: false, message: 'Acesso negado.' };
+
+  const id = formData.get('id') as string;
+  const content = formData.get('content') as string;
+
+  if (!content) {
+    return { success: false, message: 'O conteúdo não pode estar vazio.' };
+  }
+
+  const { error } = await supabase.from('Announcements').update({ content }).eq('id', id);
+
+  if (error) {
+    console.error('Erro ao atualizar aviso:', error);
+    return { success: false, message: `Falha ao atualizar: ${error.message}` };
+  }
+
+  revalidatePath('/admin/announcements');
+  revalidatePath('/painel');
+  return { success: true, message: 'Aviso atualizado com sucesso!' };
+}
+
+export async function deleteAnnouncement(id: string): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: 'Acesso negado.' };
+  const { data: profile } = await supabase.from('Users').select('role').eq('id', user.id).single();
+  if (profile?.role !== 'ADMIN') return { success: false, message: 'Acesso negado.' };
+
+  const { error } = await supabase.from('Announcements').delete().eq('id', id);
+
+  if (error) {
+    console.error('Erro ao excluir aviso:', error);
+    return { success: false, message: `Falha ao excluir: ${error.message}` };
+  }
+
+  revalidatePath('/admin/announcements');
+  revalidatePath('/painel');
+  return { success: true, message: 'Aviso excluído com sucesso!' };
+}
