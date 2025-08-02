@@ -1,4 +1,4 @@
-# Project S - Plataforma de Gerenciamento de Parceiros
+# Luanda - Gerenciamento de Parceiros
 
 Este é um projeto full-stack construído com Next.js e Supabase, servindo como uma plataforma para gerenciamento de usuários com diferentes níveis de acesso (Admin, Líder, Parceiro). Ele foi desenhado para ser um esqueleto robusto e escalável para futuros projetos web modernos.
 
