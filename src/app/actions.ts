@@ -9,10 +9,6 @@ type ActionResult = {
   message: string;
 };
 
-type SignInFormState = {
-  message: string;
-} | undefined;
-
 export async function registerPartner(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   const partnerData = {
@@ -30,7 +26,7 @@ export async function registerPartner(formData: FormData): Promise<ActionResult>
   return { success: true, message: 'Cadastro realizado com sucesso!' }
 }
 
-export async function signIn(prevState: SignInFormState, formData: FormData) {
+export async function signIn(formData: FormData): Promise<{ success: boolean; message: string }> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const supabase = await createClient();
@@ -42,11 +38,11 @@ export async function signIn(prevState: SignInFormState, formData: FormData) {
 
   if (error) {
     console.error('Erro no login:', error.message)
-    return { message: 'Credenciais inválidas.' }
+    return { success: false, message: 'Credenciais inválidas.' }
   }
 
   revalidatePath('/', 'layout');
-  return redirect('/painel');
+  return { success: true, message: 'Login bem-sucedido!' };
 }
 
 export async function signOut() {

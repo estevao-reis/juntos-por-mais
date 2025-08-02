@@ -1,15 +1,34 @@
 'use client'
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
 
 export function LoginForm() {
-  const [state, dispatch] = useActionState(signIn, undefined);
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setPending(true);
+    setError(null);
+
+    const formData = new FormData(event.currentTarget);
+    const result = await signIn(formData);
+
+    if (result.success) {
+      router.refresh();
+
+      router.push('/painel');
+    } else {
+      setError(result.message);
+      setPending(false);
+  } };
 
   return (
     <Card className="w-full max-w-sm">
@@ -19,7 +38,7 @@ export function LoginForm() {
           Acesse sua conta para visualizar o painel.
         </CardDescription>
       </CardHeader>
-      <form action={dispatch}>
+      <form onSubmit={handleSubmit}>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -30,22 +49,15 @@ export function LoginForm() {
             <Input id="password" type="password" name="password" required />
           </div>
 
-          {state?.message && (
+          {error && (
             <div className="text-sm font-medium text-destructive">
-              {state.message}
+              {error}
             </div>
           )}
-          <LoginButton />
+          <Button type="submit" className="w-full" disabled={pending}>
+            {pending ? "Entrando..." : "Entrar"}
+          </Button>
         </CardContent>
       </form>
     </Card>
-); }
-
-function LoginButton() {
-  const { pending } = useFormStatus();
-
-  return (
-    <Button className="w-full" aria-disabled={pending}>
-      {pending ? "Entrando..." : "Entrar"}
-    </Button>
 ); }
