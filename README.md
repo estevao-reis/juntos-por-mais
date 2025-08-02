@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project S - Plataforma de Gerenciamento de Parceiros
 
-## Getting Started
+Este é um projeto full-stack construído com Next.js e Supabase, servindo como uma plataforma para gerenciamento de usuários com diferentes níveis de acesso (Admin, Líder, Parceiro). Ele foi desenhado para ser um esqueleto robusto e escalável para futuros projetos web modernos.
 
-First, run the development server:
+## 🚀 Sobre o Projeto
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+A aplicação permite que um Administrador gerencie uma rede de Líderes, que por sua vez indicam Parceiros. O sistema é focado em fornecer ao Admin dados sobre o desempenho de seus líderes e uma forma de comunicação centralizada.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✨ Funcionalidades
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Página de Cadastro Pública:** Formulário para novos "Parceiros" se cadastrarem, vinculados a um "Líder" existente.
+- **Autenticação de Usuários:** Sistema completo de login e logout usando Supabase Auth.
+- **Rotas Protegidas:** Uso de Middleware para proteger rotas, separando o acesso de usuários logados e não logados.
+- **Níveis de Acesso (Roles):**
+  - **Painel do Líder (`/painel`):** Área restrita onde líderes podem visualizar avisos enviados pelo Admin.
+  - **Painel do Admin (`/admin`):** Área de gerenciamento completa com layout próprio (sidebar).
+    - **Dashboard de Desempenho:** Visualização de dados com a contagem de parceiros por líder.
+    - **Gerenciamento de Avisos:** Interface para o Admin enviar e visualizar comunicados.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tecnologias Utilizadas
 
-## Learn More
+- **Framework:** [Next.js](https://nextjs.org/) (com App Router)
+- **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
+- **Backend e Banco de Dados:** [Supabase](https://supabase.com/) (PostgreSQL, Auth, RPC Functions)
+- **Estilização:** [Tailwind CSS](https://tailwindcss.com/)
+- **Componentes UI:** [Shadcn/ui](https://ui.shadcn.com/)
+- **Animações:** [Framer Motion](https://www.framer.com/motion/)
+- **Ícones:** [Lucide React](https://lucide.dev/)
 
-To learn more about Next.js, take a look at the following resources:
+## 📄 Páginas e Rotas
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `/`: Página inicial com informações e formulário de cadastro.
+- `/login`: Página de login para Líderes e Admin.
+- `/painel`: Painel do Líder (rota protegida).
+- `/admin/dashboard`: Dashboard do Admin (rota protegida por role).
+- `/admin/announcements`: Gerenciamento de avisos do Admin (rota protegida por role).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ⚙️ Como Rodar o Projeto (Setup)
 
-## Deploy on Vercel
+Para rodar este projeto localmente, siga os passos abaixo:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/seu-usuario/sup.git](https://github.com/seu-usuario/sup.git)
+    cd sup
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
+
+3.  **Configure o Supabase:**
+    - Crie um novo projeto em [supabase.com](https://supabase.com/).
+    - Use o **SQL Editor** para criar as tabelas `Users` e `Announcements` e a função `get_leader_partner_counts()`. (Você pode colar o SQL do nosso histórico aqui).
+
+4.  **Configure as Variáveis de Ambiente:**
+    - Renomeie o arquivo `.env.example` para `.env.local` (ou crie um novo).
+    - Adicione suas chaves do Supabase, que você encontra em *Project Settings > API*.
+    ```env
+    NEXT_PUBLIC_SUPABASE_URL=SUA_URL_DO_PROJETO_SUPABASE
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_CHAVE_ANON_PUBLICA
+    ```
+
+5.  **Rode o servidor de desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+
+Acesse [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.
