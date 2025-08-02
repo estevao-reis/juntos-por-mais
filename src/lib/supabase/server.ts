@@ -12,16 +12,17 @@ export async function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value
         },
+
         set(name: string, value: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value, ...options })
-          } catch (error) {
-            // Ignorar erros em Server Components
+          } 
+          catch (error) {
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
-          } catch (error) {
-            // Ignorar erros em Server Components
+          } 
+          catch (error) {
 } }, }, } ) }

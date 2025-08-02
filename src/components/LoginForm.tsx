@@ -5,11 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useActionState, useOptimistic } from "react";
-import { useFormStatus } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 
 export function LoginForm() {
-  const [errorMessage, dispatch] = useActionState(signIn, undefined);
+  const [state, dispatch] = useFormState(signIn, undefined);
 
   return (
     <Card className="w-full max-w-sm">
@@ -29,9 +28,10 @@ export function LoginForm() {
             <Label htmlFor="password">Senha</Label>
             <Input id="password" type="password" name="password" required />
           </div>
-          {errorMessage && (
+
+          {state?.message && (
             <div className="text-sm font-medium text-destructive">
-              {errorMessage.message}
+              {state.message}
             </div>
           )}
           <LoginButton />

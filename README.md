@@ -1,8 +1,8 @@
-# Project S - Plataforma de Gerenciamento de Parceiros
+# Plataforma de Gerenciamento de Parceiros
 
 Este é um projeto full-stack construído com Next.js e Supabase, servindo como uma plataforma para gerenciamento de usuários com diferentes níveis de acesso (Admin, Líder, Parceiro). Ele foi desenhado para ser um esqueleto robusto e escalável para futuros projetos web modernos.
 
-## 🚀 Sobre o Projeto
+## 🚀 Sobre
 
 A aplicação permite que um Administrador gerencie uma rede de Líderes, que por sua vez indicam Parceiros. O sistema é focado em fornecer ao Admin dados sobre o desempenho de seus líderes e uma forma de comunicação centralizada.
 

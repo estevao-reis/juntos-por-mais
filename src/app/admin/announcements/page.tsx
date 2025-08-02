@@ -1,8 +1,7 @@
-// src/app/admin/announcements/page.tsx
 import { AnnouncementForm } from "@/components/AnnouncementForm";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 
 export default async function AnnouncementsPage() {
   const supabase = await createClient();
@@ -13,7 +12,6 @@ export default async function AnnouncementsPage() {
   const { data: profile } = await supabase.from('Users').select('role').eq('id', user.id).single();
   if (profile?.role !== 'ADMIN') redirect('/painel');
 
-  // Busca os avisos existentes para listar na página
   const { data: announcements } = await supabase.from('Announcements').select('*').order('created_at', { ascending: false });
 
   return (
