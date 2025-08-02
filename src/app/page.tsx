@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { RegistrationForm } from './components/RegistrationForm';
-import { Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Instagram, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
@@ -20,11 +20,10 @@ export default async function HomePage() {
 
   const bossInfo = {
     name: "Estevão Reis",
-    bio: "CEO e Fundador | Especialista em Conexões Estratégicas",
+    bio: "Chefe da Ass. Artic. Instit. da Vice-Governadoria",
     socials: [
-      { name: "Instagram", url: "#", icon: <Instagram className="h-6 w-6" /> },
-      { name: "Twitter", url: "#", icon: <Twitter className="h-6 w-6" /> },
-      { name: "LinkedIn", url: "#", icon: <Linkedin className="h-6 w-6" /> },
+      { name: "Instagram", url: "https://instagram.com/estevao_reis", icon: <Instagram className="h-6 w-6" /> },
+      { name: "Facebook", url: "https://facebook.com/estevaoreisdf", icon: <Facebook className="h-6 w-6" /> },
   ] };
 
   return (

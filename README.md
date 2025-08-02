@@ -1,14 +1,14 @@
 # Plataforma de Gerenciamento de Parceiros
 
-Este é um projeto full-stack construído com Next.js e Supabase, servindo como uma plataforma para gerenciamento de usuários com diferentes níveis de acesso (Admin, Líder, Parceiro). Ele foi desenhado para ser um esqueleto robusto e escalável para futuros projetos web modernos.
+Este projeto é um esqueleto full-stack, construído com as tecnologias mais modernas do ecossistema Next.js. Ele serve como uma base robusta para aplicações web que necessitam de autenticação, múltiplos níveis de acesso de usuário (roles), e um painel administrativo para gerenciamento de dados.
 
-## 🚀 Sobre
+## 🚀 Sobre o Projeto
 
 A aplicação permite que um Administrador gerencie uma rede de Líderes, que por sua vez indicam Parceiros. O sistema é focado em fornecer ao Admin dados sobre o desempenho de seus líderes e uma forma de comunicação centralizada.
 
-## ✨ Funcionalidades
+## ✨ Funcionalidades Principais
 
-- **Página de Cadastro Pública:** Formulário para novos "Parceiros" se cadastrarem, vinculados a um "Líder" existente.
+- **Cadastro Público:** Formulário para novos "Parceiros" se cadastrarem, vinculados a um "Líder" existente.
 - **Autenticação de Usuários:** Sistema completo de login e logout usando Supabase Auth.
 - **Rotas Protegidas:** Uso de Middleware para proteger rotas, separando o acesso de usuários logados e não logados.
 - **Níveis de Acesso (Roles):**
@@ -16,6 +16,16 @@ A aplicação permite que um Administrador gerencie uma rede de Líderes, que po
   - **Painel do Admin (`/admin`):** Área de gerenciamento completa com layout próprio (sidebar).
     - **Dashboard de Desempenho:** Visualização de dados com a contagem de parceiros por líder.
     - **Gerenciamento de Avisos:** Interface para o Admin enviar e visualizar comunicados.
+
+## 🗺️ Telas da Aplicação
+
+Uma visão geral das telas principais que compõem a aplicação:
+
+1.  **Página Inicial e Cadastro** (`/`)
+2.  **Login** (`/login`)
+3.  **Painel do Líder** (`/painel`)
+4.  **Dashboard do Administrador** (`/admin/dashboard`)
+5.  **Gerenciamento de Avisos** (`/admin/announcements`)
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -27,44 +37,75 @@ A aplicação permite que um Administrador gerencie uma rede de Líderes, que po
 - **Animações:** [Framer Motion](https://www.framer.com/motion/)
 - **Ícones:** [Lucide React](https://lucide.dev/)
 
-## 📄 Páginas e Rotas
+## 📄 Páginas e Rotas (Detalhado)
 
-- `/`: Página inicial com informações e formulário de cadastro.
+- `/`: Página inicial com informações, header com imagem e formulário de cadastro de Parceiros.
 - `/login`: Página de login para Líderes e Admin.
-- `/painel`: Painel do Líder (rota protegida).
-- `/admin/dashboard`: Dashboard do Admin (rota protegida por role).
-- `/admin/announcements`: Gerenciamento de avisos do Admin (rota protegida por role).
+- `/painel`: Painel do Líder (rota protegida), onde visualiza os comunicados do Admin.
+- `/admin/dashboard`: Dashboard do Admin (rota protegida por role), exibe a performance dos líderes.
+- `/admin/announcements`: Gerenciamento de avisos do Admin (rota protegida por role), permite enviar e ver histórico de avisos.
 
-## ⚙️ Como Rodar o Projeto (Setup)
+## ⚙️ Como Rodar Localmente (Setup)
 
-Para rodar este projeto localmente, siga os passos abaixo:
+Para executar este projeto em um ambiente de desenvolvimento local, siga os passos:
 
-1.  **Clone o repositório:**
+1.  **Pré-requisitos:** Certifique-se de ter o [Node.js](https://nodejs.org/) (versão 20 ou superior) instalado.
+
+2.  **Clone o repositório:**
     ```bash
-    git clone [https://github.com/seu-usuario/sup.git](https://github.com/seu-usuario/sup.git)
-    cd sup
+    git clone [https://github.com/estevao-reis/juntos-por-mais.git](https://github.com/estevao-reis/juntos-por-mais.git)
+    cd juntos-por-mais
     ```
 
-2.  **Instale as dependências:**
+3.  **Instale as dependências:**
     ```bash
     npm install
     ```
 
-3.  **Configure o Supabase:**
+4.  **Configure o Banco de Dados no Supabase:**
     - Crie um novo projeto em [supabase.com](https://supabase.com/).
-    - Use o **SQL Editor** para criar as tabelas `Users` e `Announcements` e a função `get_leader_partner_counts()`. (Você pode colar o SQL do nosso histórico aqui).
+    - Navegue até o **SQL Editor**.
+    - Copie todo o conteúdo do arquivo `supabase/schema.sql` e cole no editor.
+    - Clique em **"RUN"** para criar todas as tabelas, tipos e funções de uma só vez.
 
-4.  **Configure as Variáveis de Ambiente:**
-    - Renomeie o arquivo `.env.example` para `.env.local` (ou crie um novo).
-    - Adicione suas chaves do Supabase, que você encontra em *Project Settings > API*.
+5.  **Configure as Variáveis de Ambiente:**
+    - Crie um arquivo chamado `.env.local` na raiz do projeto.
+    - Adicione as chaves do seu projeto Supabase (encontradas em *Project Settings > API*).
     ```env
     NEXT_PUBLIC_SUPABASE_URL=SUA_URL_DO_PROJETO_SUPABASE
     NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_CHAVE_ANON_PUBLICA
     ```
 
-5.  **Rode o servidor de desenvolvimento:**
+6.  **Rode o servidor:**
     ```bash
     npm run dev
     ```
 
-Acesse [http://localhost:3000](http://localhost:3000) no seu navegador para ver o resultado.
+Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
+
+## 🚀 Deploy
+
+O deploy deste projeto é feito de forma contínua e automática pela **Vercel**.
+
+- **Ambiente de Produção:** O site principal está ligado à branch `main` do repositório.
+- **Processo:** Qualquer `git push` para a branch `main` acionará um novo build na Vercel, atualizando o site no ar em poucos minutos.
+- **Configuração:** As variáveis de ambiente precisam ser configuradas no painel do projeto na Vercel para que o deploy funcione.
+
+## 🔑 Variáveis de Ambiente
+
+Para que a aplicação se conecte ao Supabase, as seguintes variáveis são necessárias no seu arquivo `.env.local` (para desenvolvimento local) e nas configurações do projeto na Vercel (para produção):
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=SUA_URL_DO_PROJETO_SUPABASE
+NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_CHAVE_ANON_PUBLICA
+```
+- `NEXT_PUBLIC_SUPABASE_URL`: A URL do seu projeto Supabase.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: A chave de API anônima (pública) do seu projeto.
+
+Você pode encontrar ambas em *Project Settings > API* no seu painel do Supabase.
+
+## 🔗 Links Úteis
+
+- **Projeto no Ar (Produção):** `[http://juntos-por-mais.vercel.app]`
+- **Painel do Supabase:** `[https://app.supabase.com/]`
+- **Repositório no GitHub:** `[http://github.com/estevao-reis/juntos-por-mais]`
