@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 
 export function LoginForm() {
-  const [state, dispatch] = useFormState(signIn, undefined);
+  const [state, dispatch] = useActionState(signIn, undefined);
 
   return (
     <Card className="w-full max-w-sm">

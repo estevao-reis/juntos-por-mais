@@ -1,6 +1,4 @@
-import { signOut } from "@/app/actions";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 
@@ -23,16 +21,13 @@ export default async function PainelPage() {
   
   return (
     <div className="container mx-auto p-8">
-      <header className="flex justify-between items-center mb-10">
+      <header className="flex justify-between items-start mb-10">
         <div>
           <h1 className="text-3xl font-bold">Painel do Líder</h1>
           <p className="mt-2 text-muted-foreground">
             Bem-vindo, <span className="font-semibold text-primary">{user.email}</span>!
           </p>
         </div>
-        <form action={signOut}>
-          <Button variant="outline">Sair</Button>
-        </form>
       </header>
 
       <main>

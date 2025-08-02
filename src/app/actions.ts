@@ -34,25 +34,27 @@ export async function signIn(prevState: SignInFormState, formData: FormData) {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const supabase = await createClient();
+  
   const { error } = await supabase.auth.signInWithPassword({
     email,
     password,
-  })
+  });
+
   if (error) {
     console.error('Erro no login:', error.message)
     return { message: 'Credenciais inválidas.' }
   }
-  return redirect('/painel')
+
+  revalidatePath('/', 'layout');
+  return redirect('/painel');
 }
 
 export async function signOut() {
   const supabase = await createClient();
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.error('Erro ao fazer logout:', error.message);
-    return redirect('/painel');
-  }
-  return redirect('/');
+  await supabase.auth.signOut();
+  
+  revalidatePath('/', 'layout');
+  return redirect('/login');
 }
 
 export async function sendAnnouncement(formData: FormData): Promise<ActionResult> {

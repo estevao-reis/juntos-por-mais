@@ -1,14 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { RegistrationForm } from './components/RegistrationForm';
 import { Instagram, Facebook } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 
 export default async function HomePage() {
   const supabase = await createClient();
   
-  const { data: { user } } = await supabase.auth.getUser();
-
   const { data: leaders, error } = await supabase
     .from('Users')
     .select('id, name')
@@ -19,7 +15,7 @@ export default async function HomePage() {
   }
 
   const bossInfo = {
-    name: "Estevão Reis",
+    name: "Estêvão Reis",
     bio: "Chefe da Ass. Artic. Instit. da Vice-Governadoria",
     socials: [
       { name: "Instagram", url: "https://instagram.com/estevao_reis", icon: <Instagram className="h-6 w-6" /> },
@@ -29,21 +25,13 @@ export default async function HomePage() {
   return (
     <>
       <header 
-        className="h-[35vh] relative flex items-center bg-cover bg-center" 
+        className="h-[50vh] relative flex items-center bg-cover bg-center" 
         style={{ backgroundImage: "url('/bg.jpg')" }}
       >
         <div className="absolute inset-0 bg-black/60"></div>
-
-        <div className="absolute top-6 right-6 z-20">
-          <Link href={user ? "/painel" : "/login"}>
-            <Button variant="outline">
-              {user ? "Acessar Painel" : "Login"}
-            </Button>
-          </Link>
-        </div>
         
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-xl">
+          <div>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">
               {bossInfo.name}
             </h1>
