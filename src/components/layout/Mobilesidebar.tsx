@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Home, ClipboardPen, LayoutGrid, ShieldCheck, LogIn, LogOut } from 'lucide-react';
+import { Home, ListChecks, LayoutList, LayoutDashboard, Text, LogIn, LogOut } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { signOut } from '@/app/actions';
 import Image from 'next/image';
@@ -17,16 +17,16 @@ interface MobileSidebarProps {
 
 const mainLinks = [
   { href: '/', label: 'Início', icon: Home },
-  { href: '/cadastro', label: 'Cadastro', icon: ClipboardPen },
+  { href: '/cadastro', label: 'Cadastro', icon: ListChecks },
 ];
 
 const leaderLinks = [
-  { href: '/painel', title: 'Painel de Avisos', icon: LayoutGrid },
+  { href: '/painel', title: 'Painel de Avisos', icon: LayoutList },
 ];
 
 const adminLinks = [
-  { href: '/admin/dashboard', title: 'Relatório Geral', icon: ShieldCheck },
-  { href: '/admin/announcements', title: 'Gerenciar Avisos', icon: ShieldCheck },
+  { href: '/admin/dashboard', title: 'Relatório Geral', icon: Text },
+  { href: '/admin/announcements', title: 'Gerenciar Avisos', icon: LayoutDashboard },
 ];
 
 export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
@@ -77,7 +77,7 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
         {/* Seção do Admin */}
         {isAdmin && (
           <div>
-            <h3 className="mb-2 px-3 text-xs font-semibold uppercase text-muted-foreground/80">Admin</h3>
+            <h3 className="mb-2 px-3 text-xs font-semibold uppercase text-muted-foreground/80">Administrador</h3>
             <div className="flex flex-col gap-1">
               {adminLinks.map(link => <NavLink key={link.href} href={link.href} label={link.title} icon={link.icon} />)}
             </div>
@@ -98,7 +98,7 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
           <Link href="/login" onClick={onClose}>
             <Button variant="default" className="w-full justify-center gap-2">
               <LogIn className="size-5" />
-              Login / Entrar
+              Entrar
             </Button>
           </Link>
         )}

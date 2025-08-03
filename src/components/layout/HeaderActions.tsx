@@ -85,7 +85,7 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
           </>
         ) : (
           <Link href="/login">
-            <Button variant="default" size="sm">Login</Button>
+            <Button variant="default" size="sm">Entrar</Button>
           </Link>
         )}
       </nav>

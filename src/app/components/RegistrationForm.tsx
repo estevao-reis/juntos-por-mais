@@ -54,12 +54,12 @@ export function RegistrationForm({ leaders }: RegistrationFormProps) {
 
         <div className="grid gap-2">
           <Label htmlFor="name">Seu Nome Completo</Label>
-          <Input type="text" id="name" name="name" required placeholder="John Doe" />
+          <Input type="text" id="name" name="name" required placeholder="Fabiano Rodrigues" />
         </div>
 
         <div className="grid gap-2">
           <Label htmlFor="email">Seu Melhor E-mail</Label>
-          <Input type="email" id="email" name="email" required placeholder="john.doe@example.com" />
+          <Input type="email" id="email" name="email" required placeholder="fab.rodrigues@exemplo.com" />
         </div>
 
         <Button type="submit" className="w-full">
