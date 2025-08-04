@@ -13,7 +13,7 @@ A aplicação permite que um Administrador gerencie uma rede de Líderes, que po
   - **Painel do Líder (`/painel`):** Área restrita onde líderes podem visualizar avisos enviados pelo Admin.
   - **Painel do Admin (`/admin`):** Área de gerenciamento completa com **Dashboard de Desempenho** (contagem de parceiros por líder) e **Gerenciamento de Avisos** (uma interface para o Administrador enviar e visualizar comunicados).
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **Framework:** [Next.js](https://nextjs.org/) (com App Router)
 - **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
@@ -23,7 +23,7 @@ A aplicação permite que um Administrador gerencie uma rede de Líderes, que po
 - **Animações:** [Framer Motion](https://www.framer.com/motion/)
 - **Ícones:** [Lucide React](https://lucide.dev/)
 
-## 📄 Páginas e Rotas
+## Páginas e Rotas
 
 1. `/`: Página inicial com informações, header com imagem e formulário de cadastro de Parceiros.
 2. `/login`: Página de login para Líderes e Admin.
@@ -31,7 +31,7 @@ A aplicação permite que um Administrador gerencie uma rede de Líderes, que po
 4. `/admin/dashboard`: Dashboard do Administrador (rota protegida por role), exibe a performance dos líderes.
 5. `/admin/announcements`: Gerenciamento de avisos do Administrador (rota protegida por role), permite enviar e ver histórico de avisos.
 
-## ⚙️ Como Rodar Localmente
+## Como Rodar Localmente
 
 Para executar este projeto em um ambiente de desenvolvimento local, siga os passos:
 
@@ -61,9 +61,3 @@ Para executar este projeto em um ambiente de desenvolvimento local, siga os pass
     ```
 
 Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
-
-## 🔗 Links Úteis
-
-- **Website:** `[http://juntos-por-mais.vercel.app]`
-- **Supabase:** `[https://app.supabase.com/]`
-- **Repositório no GitHub com o código-fonte:** `[http://github.com/estevao-reis/juntos-por-mais]`
