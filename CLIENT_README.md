@@ -1,8 +1,4 @@
-# Guia de Gerenciamento e Propriedade do Projeto
-
-Este documento serve como um guia central para o gerenciamento, segurança e acesso à plataforma de gerenciamento de parceiros.
-
-## 1. Controle Exclusivo do Projeto
+# Guia de Gerenciamento, Segurança e Propriedade da Plataforma
 
 Para garantir total autonomia e propriedade, o projeto é dividido em três componentes principais, todos sob seu controle:
 
@@ -12,17 +8,13 @@ Para garantir total autonomia e propriedade, o projeto é dividido em três comp
 
 Com o controle dessas três contas (GitHub, Vercel, Supabase), você tem 100% de propriedade sobre todo o ativo digital.
 
-## 2. Segurança do Projeto
+## Segurança do Projeto
 
-A segurança da aplicação é garantida pela separação entre o código e as informações sensíveis.
+O repositório do código no GitHub pode ser público sem riscos. Ele contém apenas a lógica de funcionamento, como uma receita, mas não contém nenhuma senha ou chave de acesso. Já as "chaves" que conectam o site ao banco de dados estão armazenadas de forma segura como **Variáveis de Ambiente** diretamente nas configurações do projeto na Vercel. Elas **não** estão no código e só podem ser acessadas por quem tem permissão ao seu painel da Vercel.
 
-* **Código Público:** O repositório do código no GitHub pode ser público sem riscos. Ele contém apenas a lógica de funcionamento, como uma receita, mas não contém nenhuma senha ou chave de acesso.
+## Acesso Administrativo
 
-* **Informações Sensíveis (Credenciais):** As "chaves" que conectam o site ao banco de dados estão armazenadas de forma segura como **Variáveis de Ambiente** diretamente nas configurações do projeto na Vercel. Elas **não** estão no código e só podem ser acessadas por quem tem permissão ao seu painel da Vercel.
-
-## 3. Acesso Administrativo
-
-A plataforma possui um painel administrativo para o gerenciamento do sistema.
+O site possui um painel administrativo para o gerenciamento do sistema.
 
 * **Quem tem acesso:** O usuário com a permissão de `ADMIN` no banco de dados.
 * **Como Acessar:** Através da página de login padrão da aplicação.
@@ -32,7 +24,7 @@ A plataforma possui um painel administrativo para o gerenciamento do sistema.
     -   Visualizar o dashboard com a contagem de parceiros por líder.
     -   Acessar a área de gerenciamento para enviar novos avisos aos líderes.
 
-## 4. Observações sobre Manutenção e Custos
+## Observações sobre Manutenção e Custos
 
 Atualmente, o projeto opera de forma totalmente gratuita, utilizando os planos "Hobby" da Vercel e "Free" do Supabase, que são muito robustos.
 
@@ -42,15 +34,13 @@ Atualmente, o projeto opera de forma totalmente gratuita, utilizando os planos "
     -   **Requisições de API:** 2 milhões por mês.
 
 * **Quando Fazer um Upgrade?**
-    A necessidade de um plano pago (geralmente a partir de $25/mês no Supabase) surgirá quando o negócio exigir funcionalidades profissionais, como:
+    A necessidade de um plano pago surgirá quando o negócio exigir funcionalidades profissionais, como:
     1.  **Backups Diários Automáticos:** Para garantir a segurança total dos dados.
     2.  **Projeto Sempre Ativo:** O plano gratuito pode "pausar" o banco de dados após uma semana sem uso, reativando no primeiro acesso. O plano pago garante que ele esteja sempre online e com performance máxima.
 
 **Conclusão:** A infraestrutura atual suportará o crescimento do projeto por um longo período sem custos.
 
 ## 5. Links Essenciais dos Serviços
-
-Guarde estes links. Eles são os pontos de acesso para gerenciar cada parte do seu projeto.
 
 * **Aplicação no Ar (Site):**
     -   `[http://juntos-por-mais.vercel.app]`
