@@ -40,9 +40,9 @@ Atualmente, o projeto opera de forma totalmente gratuita, utilizando os planos "
 
 **Conclusão:** A infraestrutura atual suportará o crescimento do projeto por um longo período sem custos.
 
-## 5. Links Essenciais dos Serviços
+## Links Essenciais dos Serviços
 
-* **Aplicação no Ar (Site):**
+* **Aplicação no Ar (Website):**
     -   `[http://juntos-por-mais.vercel.app]`
 
 * **Painel de Controle do Site (Vercel):**
