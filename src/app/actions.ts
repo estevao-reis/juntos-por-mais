@@ -347,7 +347,7 @@ export async function updateUserProfile(
 
   const isAdmin = profile.role === 'ADMIN';
   
-  const profileData: { [key: string]: any } = {
+  const profileData: { [key: string]: string | null } = {
     name: formData.get("name") as string,
     phone_number: formData.get("phone_number") as string,
     region_id: formData.get("region_id") as string,
