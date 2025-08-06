@@ -16,13 +16,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { updateUserRole } from "@/app/actions";
+import { deleteUserByAdmin, updateUserRole } from "@/app/actions";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import { Edit, Trash2 } from "lucide-react";
+import { EditUserModal } from "./EditUserModal";
 
 type User = {
   id: string;
+  auth_id: string | null;
   name: string;
   email: string;
+  cpf: string | null;
   role: "ADMIN" | "LEADER" | "SUPPORTER";
   region_name: string | null;
   created_at: string;
@@ -81,33 +86,65 @@ function RoleSwitcher({
 ); }
 
 export function UsersTable({ users }: UsersTableProps) {
+  const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+  const handleDelete = async (user: User) => {
+    if (window.confirm(`Tem certeza que deseja excluir "${user.name}"? Esta ação não pode ser desfeita.`)) {
+      setIsDeleting(user.id);
+      const result = await deleteUserByAdmin(user.id, user.auth_id);
+      alert(result.message);
+      setIsDeleting(null);
+  } };
+
   return (
-    <div className="rounded-lg border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Nome</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Região</TableHead>
-            <TableHead>Data de Cadastro</TableHead>
-            <TableHead className="text-right">Função</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user.id}>
-              <TableCell className="font-medium">{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.region_name || "N/A"}</TableCell>
-              <TableCell>
-                {new Date(user.created_at).toLocaleDateString("pt-BR")}
-              </TableCell>
-              <TableCell className="text-right">
-                <RoleSwitcher userId={user.id} currentRole={user.role} />
-              </TableCell>
+    <>
+      {editingUser && (
+        <EditUserModal user={editingUser} onClose={() => setEditingUser(null)} />
+      )}
+      <div className="rounded-lg border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nome</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Região</TableHead>
+              <TableHead>Data de Cadastro</TableHead>
+              <TableHead>Função</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+          </TableHeader>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user.id}>
+                <TableCell className="font-medium">{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>{user.region_name || "N/A"}</TableCell>
+                <TableCell>
+                  {new Date(user.created_at).toLocaleDateString("pt-BR")}
+                </TableCell>
+                <TableCell>
+                  <RoleSwitcher userId={user.id} currentRole={user.role} />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button variant="ghost" size="icon" onClick={() => setEditingUser(user)}>
+                    <Edit className="h-4 w-4" />
+                    <span className="sr-only">Editar</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDelete(user)}
+                    disabled={isDeleting === user.id}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                    <span className="sr-only">Excluir</span>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </>
 ); }

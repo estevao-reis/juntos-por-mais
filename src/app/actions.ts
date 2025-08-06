@@ -84,35 +84,85 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
   const phone_number = formData.get("phone_number") as string;
   const region_id = formData.get("region_id") as string;
   const birthDate = formData.get('birth_date') as string;
+  const occupation = (formData.get("occupation") as string) || null;
+  const motivation = (formData.get("motivation") as string) || null;
 
   if (!name || !email || !password || !cpf || !phone_number || !region_id) {
     return {
       success: false,
       message: "Por favor, preencha todos os campos essenciais.",
-  }; }
+    };
+  }
 
   if (password.length < 6) {
     return {
       success: false,
       message: "A senha deve ter no mínimo 6 caracteres.",
-  }; }
+    };
+  }
 
   const cleanedCpf = cpf.replace(/[^\d]+/g, "");
-
-  if (!validateCPF(cpf)) {
+  if (!validateCPF(cleanedCpf)) {
     return { success: false, message: "CPF inválido." };
   }
 
-  const { data: existingUser, error: existingUserError } = await supabase
+  // Verifica se já existe um Apoiador com este e-mail
+  const { data: existingSupporter } = await supabase
+    .from("Users")
+    .select("id, auth_id, role")
+    .eq("email", email)
+    .single();
+
+  if (existingSupporter) {
+    if (existingSupporter.role === "SUPPORTER" && !existingSupporter.auth_id) {
+      // --- FLUXO DE UPGRADE DE APOIADOR PARA LÍDER ---
+      const { data: { user }, error: signUpError } = await supabase.auth.signUp({ email, password });
+
+      if (signUpError) {
+        console.error("Erro no SignUp durante o upgrade:", signUpError);
+        return { success: false, message: `Falha ao criar autenticação: ${signUpError.message}` };
+      }
+      if (!user) {
+        return { success: false, message: "Não foi possível criar o usuário de autenticação." };
+      }
+
+      const { error: updateError } = await supabase
+        .from("Users")
+        .update({
+          auth_id: user.id,
+          role: "LEADER",
+          name,
+          cpf: cleanedCpf,
+          phone_number,
+          region_id,
+          birth_date: formatDateForDB(birthDate),
+          occupation,
+          motivation,
+        })
+        .eq("id", existingSupporter.id);
+
+      if (updateError) {
+        console.error("Erro ao atualizar Apoiador para Líder:", updateError);
+
+        await supabase.auth.admin.deleteUser(user.id);
+        return { success: false, message: `Falha ao atualizar perfil para líder: ${updateError.message}` };
+      }
+
+      revalidatePath("/seja-um-lider");
+      return { success: true, message: "Seu perfil de apoiador foi atualizado para Líder! Verifique seu e-mail para confirmação." };
+    } else {
+      return { success: false, message: "Este e-mail já está cadastrado como um líder ou administrador." };
+  } }
+
+  const { data: existingCpfUser } = await supabase
     .from("Users")
     .select("id")
     .eq("cpf", cleanedCpf)
     .single();
 
-  if (existingUser) {
+  if (existingCpfUser) {
     return { success: false, message: "Este CPF já está cadastrado." };
   }
-
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -124,23 +174,18 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
         phone_number,
         region_id,
         birth_date: formatDateForDB(birthDate),
-        occupation: (formData.get("occupation") as string) || null,
-        motivation: (formData.get("motivation") as string) || null,
+        occupation,
+        motivation,
   }, }, });
 
   if (error) {
-    console.error("SignUp Error:", error);
-    if (error.message.includes('duplicate key value violates unique constraint "users_email_key"')) {
-        return { success: false, message: "Este e-mail já está em uso." };
-    }
+    console.error("Erro no SignUp:", error);
     return { success: false, message: `Falha ao cadastrar: ${error.message}` };
   }
 
   if (data.user?.identities?.length === 0) {
-    return {
-      success: false,
-      message: "Este e-mail já está em uso por outro método de login.",
-  }; }
+    return { success: false, message: "Este e-mail já está em uso por outro método de login." };
+  }
 
   revalidatePath("/seja-um-lider");
   return {
@@ -187,8 +232,8 @@ export async function sendAnnouncement(
     return {
       success: false,
       message: "O conteúdo do aviso não pode estar vazio.",
-    };
-  }
+  }; }
+  
   const supabase = await createClient();
   const {
     data: { user },
@@ -209,8 +254,8 @@ export async function sendAnnouncement(
     return {
       success: false,
       message: `Falha ao enviar aviso: ${error.message}`,
-    };
-  }
+  }; }
+  
   revalidatePath("/admin/announcements");
   revalidatePath("/painel");
   return { success: true, message: "Aviso enviado com sucesso!" };
@@ -361,10 +406,12 @@ export async function getUsersWithRoles() {
     .select(
       `
             id,
+            auth_id,
             name,
             email,
             role,
             created_at,
+            cpf,
             region:AdministrativeRegions!inner(name)
         `
     )
@@ -518,4 +565,84 @@ export async function removeAvatar(): Promise<ActionResult> {
   revalidatePath('/', 'layout');
 
   return { success: true, message: 'Foto de perfil removida com sucesso.' };
+}
+
+export async function deleteUserByAdmin(userId: string, authId: string | null): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { data: { user: adminUser } } = await supabase.auth.getUser();
+  if (!adminUser) return { success: false, message: "Acesso negado: você não está autenticado." };
+  
+  const { data: adminProfile } = await supabase.from('Users').select('role').eq('id', adminUser.id).single();
+  if (adminProfile?.role !== 'ADMIN') return { success: false, message: "Acesso negado: permissão de administrador necessária." };
+  
+  if (adminUser.id === authId) {
+      return { success: false, message: "Um administrador não pode excluir a própria conta." };
+  }
+
+  if (authId) {
+      const { error: authError } = await supabase.auth.admin.deleteUser(authId);
+      if (authError && authError.message !== 'User not found') {
+          console.error("Erro ao deletar usuário da autenticação:", authError);
+          return { success: false, message: `Falha ao remover autenticação do usuário: ${authError.message}` };
+  } }
+
+  const { error: dbError } = await supabase.from('Users').delete().eq('id', userId);
+  if (dbError) {
+      console.error("Erro ao deletar perfil do usuário:", dbError);
+      return { success: false, message: `Falha ao remover perfil do usuário: ${dbError.message}` };
+  }
+
+  revalidatePath("/admin/usuarios");
+  return { success: true, message: "Usuário excluído com sucesso." };
+}
+
+
+export async function updateUserCoreInfoByAdmin(formData: FormData): Promise<ActionResult> {
+    const supabase = await createClient();
+
+    const { data: { user: adminUser } } = await supabase.auth.getUser();
+    if (!adminUser) return { success: false, message: "Acesso negado." };
+    const { data: adminProfile } = await supabase.from('Users').select('role').eq('id', adminUser.id).single();
+    if (adminProfile?.role !== 'ADMIN') return { success: false, message: "Permissão de administrador necessária." };
+
+    const userId = formData.get('userId') as string;
+    const authId = formData.get('authId') as string;
+    const email = formData.get('email') as string;
+    const cpf = formData.get('cpf') as string;
+
+    if (!userId || !email || !cpf) {
+        return { success: false, message: "Todos os campos são obrigatórios." };
+    }
+    
+    const cleanedCpf = cpf.replace(/[^\d]+/g, "");
+    if (!validateCPF(cleanedCpf)) {
+        return { success: false, message: "CPF inválido." };
+    }
+    
+    const { data: existingEmailUser } = await supabase.from('Users').select('id').eq('email', email).not('id', 'eq', userId).single();
+    if (existingEmailUser) {
+        return { success: false, message: "O e-mail informado já está em uso por outro usuário." };
+    }
+
+    const { data: existingCpfUser } = await supabase.from('Users').select('id').eq('cpf', cleanedCpf).not('id', 'eq', userId).single();
+    if (existingCpfUser) {
+        return { success: false, message: "O CPF informado já está em uso por outro usuário." };
+    }
+    
+    if (authId && authId !== "null") {
+      const { error: authError } = await supabase.auth.admin.updateUserById(authId, { email });
+      if (authError) {
+          console.error('Erro ao atualizar e-mail na autenticação:', authError);
+          return { success: false, message: `Falha ao atualizar e-mail de login: ${authError.message}` };
+    } }
+
+    const { error: dbError } = await supabase.from('Users').update({ email, cpf: cleanedCpf }).eq('id', userId);
+    if (dbError) {
+        console.error('Erro ao atualizar perfil do usuário:', dbError);
+        return { success: false, message: `Falha ao atualizar dados do perfil: ${dbError.message}` };
+    }
+
+    revalidatePath("/admin/usuarios");
+    return { success: true, message: "Dados do usuário atualizados com sucesso." };
 }
