@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function LoginForm() {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -21,14 +20,14 @@ export function LoginForm() {
     const formData = new FormData(event.currentTarget);
     const result = await signIn(formData);
 
-    if (result.success) {
-      router.refresh();
-
-      router.push('/painel');
-    } else {
+    // O sucesso agora é tratado pelo redirect na server action.
+    // O código aqui só será executado se houver um erro.
+    if (result && !result.success) {
       setError(result.message);
-      setPending(false);
-  } };
+    }
+    
+    setPending(false);
+  };
 
   return (
     <Card className="w-full max-w-sm">

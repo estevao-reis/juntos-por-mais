@@ -31,19 +31,25 @@ export default async function RootLayout({
   const { data: { user } } = await supabase.auth.getUser();
 
   let isAdmin = false;
+  let profilePictureUrl: string | null = null;
+
   if (user) {
     const { data: profile } = await supabase
       .from('Users')
-      .select('role')
+      .select('role, profile_picture_url')
       .eq('id', user.id)
       .single();
-    isAdmin = profile?.role === 'ADMIN';
-  }
+    
+    if (profile) {
+      isAdmin = profile.role === 'ADMIN';
+      profilePictureUrl = profile.profile_picture_url;
+  } }
 
   return (
     <html lang="pt-BR">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Header user={user} isAdmin={isAdmin} />
+
+        <Header user={user} isAdmin={isAdmin} profilePictureUrl={profilePictureUrl} />
         <main className="pt-16">
           {children}
         </main>

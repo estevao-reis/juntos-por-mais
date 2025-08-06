@@ -5,14 +5,16 @@ import { Instagram, Facebook } from 'lucide-react';
 export default async function HomePage() {
   const supabase = await createClient();
   
-  const { data: leaders, error } = await supabase
-    .from('Users')
-    .select('id, name')
-    .eq('role', 'LEADER');
+  const [leadersRes, regionsRes] = await Promise.all([
+    supabase.from('Users').select('id, name').eq('role', 'LEADER'),
+    supabase.from('AdministrativeRegions').select('id, name').order('name')
+  ]);
 
-  if (error) {
-    console.error('Erro ao buscar líderes:', error);
-  }
+  const leaders = leadersRes.data || [];
+  const regions = regionsRes.data || [];
+
+  if (leadersRes.error) console.error('Erro ao buscar líderes:', leadersRes.error);
+  if (regionsRes.error) console.error('Erro ao buscar RAs:', regionsRes.error);
 
   const bossInfo = {
     name: "Juntos com Estêvão Reis",
@@ -53,12 +55,12 @@ export default async function HomePage() {
       <section id="cadastro" className="py-20 bg-muted/40">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">Torne-se um Parceiro</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">Junte-se ao Movimento</h2>
             <p className="mt-4 max-w-xl mx-auto text-muted-foreground">
-              Preencha o formulário abaixo para se juntar à nossa rede exclusiva de parceiros.
+              Preencha o formulário abaixo para se tornar um apoiador e fazer parte da nossa rede.
             </p>
           </div>
-          <RegistrationForm leaders={leaders || []} />
+          <RegistrationForm leaders={leaders} regions={regions} />
         </div>
       </section>
     </>

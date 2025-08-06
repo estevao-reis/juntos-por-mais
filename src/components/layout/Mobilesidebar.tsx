@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Home, ListChecks, LayoutList, LayoutDashboard, Text, LogIn, LogOut } from 'lucide-react';
+import { Home, ListChecks, LayoutList, LayoutDashboard, Text, LogIn, LogOut, UserPlus, UserCircle } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { signOut } from '@/app/actions';
 import Image from 'next/image';
@@ -15,18 +15,26 @@ interface MobileSidebarProps {
   onClose: () => void;
 }
 
-const mainLinks = [
+// Links visíveis para todos
+const publicLinks = [
   { href: '/', label: 'Início', icon: Home },
-  { href: '/cadastro', label: 'Cadastro', icon: ListChecks },
+  { href: '/cadastro', label: 'Quero Apoiar', icon: ListChecks },
 ];
 
+// Links visíveis apenas para visitantes (não logados)
+const guestLinks = [
+    { href: '/seja-um-lider', label: 'Seja um Líder', icon: UserPlus },
+]
+
 const leaderLinks = [
-  { href: '/painel', title: 'Painel de Avisos', icon: LayoutList },
+  { href: '/painel', title: 'Mural de Avisos', icon: LayoutList },
+  { href: '/painel/perfil', title: 'Meu Perfil', icon: UserCircle },
 ];
 
 const adminLinks = [
-  { href: '/admin/dashboard', title: 'Relatório Geral', icon: Text },
-  { href: '/admin/announcements', title: 'Gerenciar Avisos', icon: LayoutDashboard },
+  { href: '/admin/dashboard', title: 'Relatório Geral', icon: LayoutDashboard },
+  { href: '/admin/announcements', title: 'Gerenciar Avisos', icon: Text },
+  { href: '/admin/usuarios', title: 'Gerenciar Usuários', icon: UserPlus },
 ];
 
 export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
@@ -56,15 +64,14 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
         </Link>
       </div>
       <nav className="flex-1 p-4 flex flex-col gap-6">
-        {/* Seção Principal */}
         <div>
           <h3 className="mb-2 px-3 text-xs font-semibold uppercase text-muted-foreground/80">Principal</h3>
           <div className="flex flex-col gap-1">
-            {mainLinks.map(link => <NavLink key={link.href} {...link} />)}
+            {publicLinks.map(link => <NavLink key={link.href} {...link} />)}
+            {!user && guestLinks.map(link => <NavLink key={link.href} {...link} />)}
           </div>
         </div>
 
-        {/* Seção do Usuário Logado */}
         {user && (
           <div>
             <h3 className="mb-2 px-3 text-xs font-semibold uppercase text-muted-foreground/80">Painel</h3>
@@ -74,7 +81,6 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
           </div>
         )}
 
-        {/* Seção do Admin */}
         {isAdmin && (
           <div>
             <h3 className="mb-2 px-3 text-xs font-semibold uppercase text-muted-foreground/80">Administrador</h3>
@@ -85,7 +91,6 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
         )}
       </nav>
 
-      {/* Rodapé com Login/Logout */}
       <div className="mt-auto p-4 border-t">
         {user ? (
           <form action={signOut}>

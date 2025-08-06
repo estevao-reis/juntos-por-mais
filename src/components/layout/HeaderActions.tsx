@@ -19,11 +19,13 @@ import { useState } from 'react';
 
 const leaderLinks = [
   { href: '/painel', title: 'Painel de Avisos' },
+  { href: '/painel/perfil', title: 'Meu Perfil' },
 ];
 
 const adminLinks = [
   { href: '/admin/dashboard', title: 'Relatório Geral' },
   { href: '/admin/announcements', title: 'Gerenciar Avisos' },
+  { href: '/admin/usuarios', title: 'Gerenciar Usuários' },
 ];
 
 interface HeaderActionsProps {
@@ -37,8 +39,6 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
   return (
     <>
       <nav className="hidden md:flex items-center gap-4">
-        <Link href="/cadastro" className="font-medium text-sm hover:text-primary transition-colors">Cadastro</Link>
-
         {user ? (
           <>
             <NavigationMenu>
@@ -84,9 +84,13 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
             </form>
           </>
         ) : (
-          <Link href="/login">
-            <Button variant="default" size="sm">Entrar</Button>
-          </Link>
+          <>
+            <Link href="/cadastro" className="font-medium text-sm hover:text-primary transition-colors">Quero Apoiar</Link>
+            <Link href="/seja-um-lider" className="font-medium text-sm hover:text-primary transition-colors">Seja um Líder</Link>
+            <Link href="/login">
+              <Button variant="default" size="sm">Entrar</Button>
+            </Link>
+          </>
         )}
       </nav>
 
