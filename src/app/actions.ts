@@ -78,27 +78,43 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const cpf = formData.get("cpf") as string;
+  const phone_number = formData.get("phone_number") as string;
+  const region_id = formData.get("region_id") as string;
+  const birthDate = formData.get('birth_date') as string;
 
-  if (!name || !email || !password) {
+  if (!name || !email || !password || !cpf || !phone_number || !region_id) {
     return {
       success: false,
-      message: "Nome, e-mail e senha são obrigatórios.",
+      message: "Por favor, preencha todos os campos essenciais.",
   }; }
+
   if (password.length < 6) {
     return {
       success: false,
       message: "A senha deve ter no mínimo 6 caracteres.",
   }; }
 
+  if (!validateCPF(cpf)) {
+    return { success: false, message: "CPF inválido." };
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
-        name: name,
+        name,
+        cpf,
+        phone_number,
+        region_id,
+        birth_date: formatDateForDB(birthDate),
+        occupation: (formData.get("occupation") as string) || null,
+        motivation: (formData.get("motivation") as string) || null,
   }, }, });
 
   if (error) {
+    console.error("SignUp Error:", error);
     return { success: false, message: `Falha ao cadastrar: ${error.message}` };
   }
 
@@ -111,8 +127,7 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
   revalidatePath("/seja-um-lider");
   return {
     success: true,
-    message:
-      "Cadastro realizado com sucesso! Verifique seu e-mail para confirmação e complete seu perfil após o login.",
+    message: "Cadastro realizado com sucesso! Verifique seu e-mail para confirmação.",
 }; }
 
 export async function signIn(

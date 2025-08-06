@@ -71,13 +71,22 @@ LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
 AS $$
 BEGIN
-  INSERT INTO public."Users" (id, auth_id, email, name, role)
+  INSERT INTO public."Users" (
+    id, auth_id, email, name, role, 
+    phone_number, region_id, cpf, birth_date, occupation, motivation
+  )
   VALUES (
     new.id,
     new.id,
     new.email,
     new.raw_user_meta_data->>'name',
-    'LEADER'
+    'LEADER',
+    new.raw_user_meta_data->>'phone_number',
+    (new.raw_user_meta_data->>'region_id')::uuid,
+    new.raw_user_meta_data->>'cpf',
+    (new.raw_user_meta_data->>'birth_date')::date,
+    new.raw_user_meta_data->>'occupation',
+    new.raw_user_meta_data->>'motivation'
   );
   RETURN new;
 END;

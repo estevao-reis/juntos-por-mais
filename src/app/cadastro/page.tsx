@@ -1,13 +1,11 @@
 import { createClient } from '@/lib/supabase/server';
 import { RegistrationForm } from '../components/RegistrationForm';
 
-export default async function CadastroPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const supabase = await createClient();
+export default async function CadastroPage(props: any) {
+  const searchParams = props.searchParams as { [key: string]: string | string[] | undefined } || {};
   const leaderRefId = searchParams.ref as string | undefined;
+
+  const supabase = await createClient();
 
   const [leadersRes, regionsRes] = await Promise.all([
     supabase.from('Users').select('id, name').eq('role', 'LEADER'),
