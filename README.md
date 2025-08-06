@@ -1,63 +1,77 @@
-# Sobre a Plataforma de Gerenciamento de Parceiros
+# Plataforma de Gerenciamento de Apoiadores e Líderes
 
-Autenticação, múltiplos níveis de acesso de usuário (roles), e um painel administrativo para gerenciamento de dados.
+Uma aplicação full-stack construída com Next.js e Supabase que permite a gestão de uma rede de apoiadores e líderes, com múltiplos níveis de acesso, painéis de controle e funcionalidades de gerenciamento completas.
 
-A aplicação permite que um Administrador gerencie uma rede de Líderes, que por sua vez indicam Parceiros. O sistema é focado em fornecer ao Admin dados sobre o desempenho de seus líderes e uma forma de comunicação centralizada.
+## Arquitetura e Funcionalidades
 
-## Funcionalidades Principais
+O sistema gerencia dois tipos principais de perfis:
+- **Supporters (Apoiadores):** Registros de pessoas que apoiam a causa. O cadastro é público e não requer autenticação.
+- **Usuários Autenticados (Leaders & Admins):** Usuários com login e senha que possuem acesso a painéis de controle.
 
-- **Cadastro Público:** Formulário para novos "Parceiros" se cadastrarem, vinculados a um "Líder" existente.
-- **Autenticação de Usuários:** Sistema completo de login e logout usando Supabase Auth.
-- **Rotas Protegidas:** Uso de Middleware para proteger rotas, separando o acesso de usuários logados e não logados.
-- **Níveis de Acesso (Roles):**
-  - **Painel do Líder (`/painel`):** Área restrita onde líderes podem visualizar avisos enviados pelo Admin.
-  - **Painel do Admin (`/admin`):** Área de gerenciamento completa com **Dashboard de Desempenho** (contagem de parceiros por líder) e **Gerenciamento de Avisos** (uma interface para o Administrador enviar e visualizar comunicados).
+### Funcionalidades Principais
+
+- **Cadastro Público:** Formulários para **Apoiadores** (`/cadastro`) e para aspirantes a **Líderes** (`/seja-um-lider`).
+- **Autenticação e Perfis:** Sistema completo de login/logout via Supabase Auth. A criação de um perfil na tabela `Users` é automatizada por um **Trigger** do PostgreSQL no momento do cadastro.
+- **Gestão de Perfil:** Usuários logados podem editar suas informações e fazer upload de uma foto de perfil, que é armazenada no Supabase Storage.
+- **Link de Convite:** Líderes têm acesso a um link de convite exclusivo para recrutar novos apoiadores.
+- **Painel do Líder (`/painel`):** Um dashboard onde o líder pode visualizar a lista de apoiadores que indicou e ler os avisos do administrador.
+- **Painel do Admin (`/admin`):**
+  - **Dashboard de Desempenho:** Visualiza a contagem de apoiadores por líder.
+  - **Gerenciamento de Avisos:** Envia, edita e exclui comunicados para os líderes.
+  - **Gerenciamento de Usuários:** Visualiza todos os usuários e pode promover Líderes a Administradores.
+- **Rotas Protegidas:** Uso de Middleware para proteger rotas com base na autenticação do usuário.
 
 ## Tecnologias Utilizadas
 
 - **Framework:** [Next.js](https://nextjs.org/) (com App Router)
 - **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
-- **Backend e Banco de Dados:** [Supabase](https://supabase.com/) (PostgreSQL, Auth, RPC Functions)
+- **Backend e Banco de Dados:** [Supabase](https://supabase.com/) (PostgreSQL, Auth, Storage, Triggers e Funções RPC)
 - **Estilização:** [Tailwind CSS](https://tailwindcss.com/)
 - **Componentes UI:** [Shadcn/ui](https://ui.shadcn.com/)
-- **Animações:** [Framer Motion](https://www.framer.com/motion/)
 - **Ícones:** [Lucide React](https://lucide.dev/)
 
 ## Páginas e Rotas
 
-1. `/`: Página inicial com informações, header com imagem e formulário de cadastro de Parceiros.
-2. `/login`: Página de login para Líderes e Admin.
-3. `/painel`: Painel do Líder (rota protegida), onde visualiza os comunicados do Admin.
-4. `/admin/dashboard`: Dashboard do Administrador (rota protegida por role), exibe a performance dos líderes.
-5. `/admin/announcements`: Gerenciamento de avisos do Administrador (rota protegida por role), permite enviar e ver histórico de avisos.
+1.  `/`: Página inicial com informações e formulário de cadastro para **Apoiadores**.
+2.  `/login`: Página de autenticação para Líderes e Administradores.
+3.  `/cadastro`: Formulário público para cadastro de novos Apoiadores. Também lida com links de convite (ex: `/cadastro?ref=ID_DO_LIDER`).
+4.  `/seja-um-lider`: Formulário de cadastro para novos **Líderes**, que cria uma conta de usuário autenticada.
+5.  `/painel`: Dashboard do **Líder** (rota protegida), exibindo seus apoiadores indicados e o mural de avisos.
+6.  `/painel/perfil`: Página para o usuário logado (Líder/Admin) editar suas informações, carregar foto e obter seu link de convite.
+7.  `/admin/dashboard`: Dashboard principal do **Administrador** (rota protegida) com o relatório de desempenho dos líderes.
+8.  `/admin/announcements`: Painel para o Admin gerenciar os avisos para os líderes.
+9.  `/admin/usuarios`: Painel para o Admin visualizar todos os usuários e promover Líderes a Administradores.
 
 ## Como Rodar Localmente
 
-Para executar este projeto em um ambiente de desenvolvimento local, siga os passos:
-
-1.  **Pré-requisitos:** Certifique-se de ter o [Node.js](https://nodejs.org/) (versão 20 ou superior) instalado.
-2.  **Clone o repositório e Instale as dependências:**
+1.  **Pré-requisitos:** Node.js (versão 20+).
+2.  **Clone e Instale:**
     ```bash
     git clone [https://github.com/estevao-reis/juntos-por-mais.git](https://github.com/estevao-reis/juntos-por-mais.git)
     cd juntos-por-mais
-
     npm install
     ```
-3.  **Configure o Banco de Dados no Supabase:**
-    - Crie um novo projeto em [supabase.com](https://supabase.com/).
+3.  **Configure o Supabase:**
+    - Crie um projeto em [supabase.com](https://supabase.com/).
     - Navegue até o **SQL Editor**.
-    - Copie todo o conteúdo do arquivo `supabase/schema.sql` e cole no editor.
-    - Clique em **"RUN"** para criar todas as tabelas, tipos e funções de uma só vez.
-4.  **Configure as Variáveis de Ambiente:**
-    - Crie um arquivo chamado `.env.local` na raiz do projeto.
-    - Adicione as chaves do seu projeto Supabase (a URL e a chave de API anônima (pública)).
+    - Copie **todo** o conteúdo do arquivo `supabase/squema.sql` e execute-o. Isso criará as tabelas, roles, o trigger de perfis e as políticas do Storage.
+4.  **Variáveis de Ambiente:**
+    - Crie um arquivo `.env.local` na raiz.
+    - Adicione as chaves do seu projeto Supabase:
     ```env
-    NEXT_PUBLIC_SUPABASE_URL=SUA_URL_DO_PROJETO_SUPABASE
+    NEXT_PUBLIC_SUPABASE_URL=SUA_URL_DO_PROETO_SUPABASE
     NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_CHAVE_ANON_PUBLICA
     ```
-5.  **Rode o servidor:**
+5.  **Rode o Servidor:**
     ```bash
     npm run dev
     ```
+Acesse [http://localhost:3000](http://localhost:3000).
 
-Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
+## Criando o Primeiro Administrador
+
+1.  Use o formulário em `/seja-um-lider` para criar um novo usuário `LEADER`.
+2.  Confirme o e-mail do usuário, se a confirmação estiver ativa.
+3.  Acesse o painel do Supabase -> Table Editor -> tabela `Users`.
+4.  Altere a `role` do usuário recém-criado de `LEADER` para `ADMIN`.
+5.  Faça login com este usuário para acessar as funcionalidades de administrador.

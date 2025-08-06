@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from '@/components/ui/textarea';
 
 interface BaseData {
   id: string;
@@ -106,12 +105,12 @@ export function RegistrationForm({ leaders, regions, defaultLeaderId }: Registra
               </div>
             )}
             <div className="grid gap-2">
-                <Label htmlFor="birth_date">Data de Nascimento</Label>
-                <Input type="date" id="birth_date" name="birth_date" />
+              <Label htmlFor="birth_date">Data de Nascimento</Label>
+              <Input type="text" id="birth_date" name="birth_date" placeholder="DD/MM/AAAA" />
             </div>
              <div className="grid gap-2">
-                <Label htmlFor="occupation">Ocupação / Profissão</Label>
-                <Input type="text" id="occupation" name="occupation" placeholder="Ex: Artesão, Estudante..." />
+              <Label htmlFor="occupation">Ocupação</Label>
+              <Input type="text" id="occupation" name="occupation" placeholder="Ex: artesão, estudante, autônomo..." />
             </div>
         </div>
 

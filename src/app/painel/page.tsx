@@ -26,7 +26,7 @@ export default async function PainelPage() {
     <div className="container mx-auto p-8">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Painel do Líder</h1>
+          <h1 className="text-3xl font-bold">Painel de Líderes</h1>
           <p className="mt-2 text-muted-foreground">
             Bem-vindo, <span className="font-semibold text-primary">{user.email}</span>!
           </p>

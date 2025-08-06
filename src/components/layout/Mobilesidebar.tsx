@@ -15,13 +15,11 @@ interface MobileSidebarProps {
   onClose: () => void;
 }
 
-// Links visíveis para todos
 const publicLinks = [
   { href: '/', label: 'Início', icon: Home },
   { href: '/cadastro', label: 'Quero Apoiar', icon: ListChecks },
 ];
 
-// Links visíveis apenas para visitantes (não logados)
 const guestLinks = [
     { href: '/seja-um-lider', label: 'Seja um Líder', icon: UserPlus },
 ]

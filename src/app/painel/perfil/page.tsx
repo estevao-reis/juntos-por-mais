@@ -36,7 +36,6 @@ export default async function ProfilePage() {
         </header>
 
         <main className="max-w-lg mx-auto grid gap-12">
-            {/* 2. Adicionar o componente de upload aqui */}
             <AvatarUploader 
               userId={profileData.id} 
               currentAvatarUrl={profileData.profile_picture_url} 

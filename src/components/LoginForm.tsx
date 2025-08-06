@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { signIn } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,8 +19,6 @@ export function LoginForm() {
     const formData = new FormData(event.currentTarget);
     const result = await signIn(formData);
 
-    // O sucesso agora é tratado pelo redirect na server action.
-    // O código aqui só será executado se houver um erro.
     if (result && !result.success) {
       setError(result.message);
     }

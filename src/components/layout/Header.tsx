@@ -14,14 +14,13 @@ export function Header({ user, isAdmin, profilePictureUrl }: HeaderProps) {
     <header className="fixed top-0 left-0 right-0 h-16 z-30 flex items-center bg-background border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
         <Link href="/" className="flex items-center gap-3 text-lg font-semibold text-foreground">
-          {/* Contêiner para o avatar */}
           <div className="relative h-8 w-8 rounded-full overflow-hidden">
             {user && profilePictureUrl ? (
               <Image
                 src={profilePictureUrl}
                 alt="Foto do usuário"
                 fill={true}
-                className="object-cover" // object-cover é a classe do Tailwind para object-fit: cover
+                className="object-cover"
               />
             ) : (
               <Image 
@@ -38,5 +37,4 @@ export function Header({ user, isAdmin, profilePictureUrl }: HeaderProps) {
         <HeaderActions user={user} isAdmin={isAdmin} />
       </div>
     </header>
-  );
-}
+); }

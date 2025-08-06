@@ -12,10 +12,10 @@ import { Card, CardContent } from './ui/card';
 
 type UserProfile = {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
-  phone_number: string;
-  region_id: string;
+  phone_number: string | null;
+  region_id: string | null;
   cpf: string | null;
   birth_date: string | null;
   occupation: string | null;
@@ -32,6 +32,27 @@ interface ProfileFormProps {
   regions: BaseData[];
 }
 
+function formatDateForDisplay(dateStr: string | null): string {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+    const dateInLocalTimezone = new Date(date.getTime() + userTimezoneOffset);
+    
+    const day = String(dateInLocalTimezone.getDate()).padStart(2, '0');
+    const month = String(dateInLocalTimezone.getMonth() + 1).padStart(2, '0');
+    const year = dateInLocalTimezone.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+function maskCPF(cpf: string | null): string {
+  if (!cpf) return '';
+  const cleaned = cpf.replace(/\D/g, '');
+  if (cleaned.length !== 11) return 'CPF pendente';
+  
+  return `***.${cleaned.substring(3, 6)}.${cleaned.substring(6, 9)}-**`;
+}
+
+
 function SubmitButton() {
   const { pending } = useFormStatus();
   return (
@@ -45,9 +66,12 @@ export function ProfileForm({ user, regions }: ProfileFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const formattedBirthDate = user.birth_date ? new Date(user.birth_date).toISOString().split('T')[0] : '';
+  const formattedBirthDate = formatDateForDisplay(user.birth_date);
 
   const handleFormAction = async (formData: FormData) => {
+    if(user.cpf) {
+      formData.append('cpf', user.cpf);
+    }
     const result = await updateUserProfile(formData);
     setMessage(result.message);
     setIsSuccess(result.success);
@@ -61,23 +85,23 @@ export function ProfileForm({ user, regions }: ProfileFormProps) {
             <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Nome Completo</Label>
-                  <Input type="text" id="name" name="name" required defaultValue={user.name} />
+                  <Input type="text" id="name" name="name" required defaultValue={user.name ?? ''} />
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="email">E-mail (não pode ser alterado)</Label>
-                    <Input type="email" id="email" name="email" disabled value={user.email} />
+                    <Input type="email" id="email" name="email" disabled defaultValue={user.email} />
                 </div>
                  <div className="grid gap-2">
-                    <Label htmlFor="cpf">CPF (não pode ser alterado)</Label>
-                    <Input type="text" id="cpf" name="cpf" disabled value={user.cpf ?? ''} />
+                    <Label htmlFor="cpf">CPF</Label>
+                    <Input type="text" id="cpf" name="cpf" disabled defaultValue={maskCPF(user.cpf)} />
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="phone_number">Telefone</Label>
-                    <Input type="tel" id="phone_number" name="phone_number" required defaultValue={user.phone_number} />
+                    <Input type="tel" id="phone_number" name="phone_number" required defaultValue={user.phone_number ?? ''} />
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="region_id">Região Administrativa</Label>
-                    <Select name="region_id" required defaultValue={user.region_id}>
+                    <Select name="region_id" required defaultValue={user.region_id ?? ''}>
                         <SelectTrigger id="region_id">
                             <SelectValue placeholder="Selecione sua RA" />
                         </SelectTrigger>
@@ -92,7 +116,13 @@ export function ProfileForm({ user, regions }: ProfileFormProps) {
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="birth_date">Data de Nascimento</Label>
-                    <Input type="date" id="birth_date" name="birth_date" defaultValue={formattedBirthDate} />
+                    <Input 
+                        type="text" 
+                        id="birth_date" 
+                        name="birth_date" 
+                        placeholder="DD/MM/AAAA"
+                        defaultValue={formattedBirthDate} 
+                    />
                 </div>
                  <div className="grid gap-2">
                     <Label htmlFor="occupation">Ocupação / Profissão</Label>

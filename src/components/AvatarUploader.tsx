@@ -68,8 +68,12 @@ export function AvatarUploader({
       } else {
         alert(`Erro: ${result.message}`);
       }
-    } catch (error: any) {
-      alert(`Erro no upload: ${error.message}`);
+    } catch (error: unknown) {
+      let errorMessage = 'Ocorreu um erro desconhecido.';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      alert(`Erro no upload: ${errorMessage}`);
     } finally {
       setUploading(false);
   } };

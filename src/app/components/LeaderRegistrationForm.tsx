@@ -22,7 +22,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" className="w-full" disabled={pending}>
-      {pending ? 'Enviando...' : 'Finalizar Cadastro de Líder'}
+      {pending ? 'Enviando...' : 'Cadastre-se como Líder'}
     </Button>
 ); }
 
@@ -86,14 +86,14 @@ export function LeaderRegistrationForm({ regions }: LeaderRegistrationFormProps)
         <div className="border-t pt-6 grid gap-4">
             <h3 className="font-semibold text-lg">Informações Adicionais</h3>
             <p className="text-sm text-muted-foreground -mt-2">
-                Conte-nos mais sobre você para criarmos oportunidades personalizadas.
+                Conte-nos mais sobre você para personalização.
             </p>
             <div className="grid gap-2">
-                <Label htmlFor="birth_date">Data de Nascimento</Label>
-                <Input type="date" id="birth_date" name="birth_date" />
+              <Label htmlFor="birth_date">Data de Nascimento</Label>
+              <Input type="text" id="birth_date" name="birth_date" placeholder="DD/MM/AAAA" />
             </div>
             <div className="grid gap-2">
-                <Label htmlFor="occupation">Ocupação / Profissão</Label>
+                <Label htmlFor="occupation">Ocupação</Label>
                 <Input type="text" id="occupation" name="occupation" placeholder="Ex: Líder comunitário, empresário..." />
             </div>
              <div className="grid gap-2">

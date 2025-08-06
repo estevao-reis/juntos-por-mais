@@ -1,9 +1,13 @@
 import { createClient } from '@/lib/supabase/server';
 import { RegistrationForm } from '../components/RegistrationForm';
 
-export default async function CadastroPage({ searchParams }: { searchParams: { ref?: string } }) {
+export default async function CadastroPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const supabase = await createClient();
-  const leaderRefId = searchParams.ref;
+  const leaderRefId = searchParams.ref as string | undefined;
 
   const [leadersRes, regionsRes] = await Promise.all([
     supabase.from('Users').select('id, name').eq('role', 'LEADER'),
@@ -22,10 +26,9 @@ export default async function CadastroPage({ searchParams }: { searchParams: { r
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">Torne-se um Apoiador</h1>
           <p className="mt-4 max-w-xl mx-auto text-muted-foreground">
-            Preencha o formulário abaixo para se juntar à nossa rede exclusiva.
+            Preencha o formulário abaixo para se juntar à nossa rede exclusiva de apoiadores.
           </p>
         </div>
-        
         <RegistrationForm leaders={leaders} regions={regions} defaultLeaderId={leaderRefId} />
       </div>
     </section>

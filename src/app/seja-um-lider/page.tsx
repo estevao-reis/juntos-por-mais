@@ -18,9 +18,9 @@ export default async function SejaUmLiderPage() {
         <div className="text-center mb-12 max-w-3xl mx-auto">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">Junte-se a Nós como Líder</h1>
           <p className="mt-4 text-muted-foreground">
-            Ser um líder em nossa comunidade significa ter mais responsabilidades, mas também maiores oportunidades. 
+            Ser um de nossos líderes significa ter mais responsabilidades, mas também maiores oportunidades. 
             Você terá acesso a um link exclusivo para convidar novos parceiros, participará mais ativamente de nossas 
-            iniciativas e seu trabalho ganhará maior destaque.
+            iniciativas e seu trabalho ganhará maior destaque. Só depende de você!
           </p>
           <p className="mt-4 text-muted-foreground">
             Para garantir o comprometimento, pedimos algumas informações adicionais. Preencha o formulário abaixo para 

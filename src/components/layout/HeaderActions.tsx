@@ -18,12 +18,12 @@ import { MobileSidebar } from './Mobilesidebar';
 import { useState } from 'react';
 
 const leaderLinks = [
-  { href: '/painel', title: 'Painel de Avisos' },
+  { href: '/painel', title: 'Meu Dashboard' },
   { href: '/painel/perfil', title: 'Meu Perfil' },
 ];
 
 const adminLinks = [
-  { href: '/admin/dashboard', title: 'Relatório Geral' },
+  { href: '/admin/dashboard', title: 'Dashboard Geral' },
   { href: '/admin/announcements', title: 'Gerenciar Avisos' },
   { href: '/admin/usuarios', title: 'Gerenciar Usuários' },
 ];
@@ -85,8 +85,8 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
           </>
         ) : (
           <>
-            <Link href="/cadastro" className="font-medium text-sm hover:text-primary transition-colors">Quero Apoiar</Link>
-            <Link href="/seja-um-lider" className="font-medium text-sm hover:text-primary transition-colors">Seja um Líder</Link>
+            <Link href="/cadastro" className="font-medium text-sm hover:text-primary transition-colors">Junte-se a Nós</Link>
+            <Link href="/seja-um-lider" className="font-medium text-sm hover:text-primary transition-colors">Sou Líder e Quero Atuar</Link>
             <Link href="/login">
               <Button variant="default" size="sm">Entrar</Button>
             </Link>

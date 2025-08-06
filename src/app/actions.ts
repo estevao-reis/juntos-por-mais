@@ -23,10 +23,20 @@ function validateCPF(cpf: string): boolean {
   return validator(9) === digits[9] && validator(10) === digits[10];
 }
 
+function formatDateForDB(dateStr: string | null): string | null {
+  if (!dateStr) return null;
+  const parts = dateStr.split('/');
+  if (parts.length !== 3) return null;
+  const [day, month, year] = parts;
+  return `${year}-${month}-${day}`;
+}
+
 export async function registerPartner(
   formData: FormData
 ): Promise<ActionResult> {
   const supabase = await createClient();
+
+  const birthDate = formData.get('birth_date') as string;
 
   const partnerData = {
     name: formData.get("name") as string,
@@ -34,7 +44,7 @@ export async function registerPartner(
     phone_number: formData.get("phone_number") as string,
     region_id: formData.get("region_id") as string,
     leader_id: (formData.get("leader") as string) || null,
-    birth_date: (formData.get("birth_date") as string) || null,
+    birth_date: formatDateForDB(birthDate),
     occupation: (formData.get("occupation") as string) || null,
     role: "SUPPORTER" as const,
   };
@@ -242,6 +252,8 @@ export async function updateUserProfile(
 ): Promise<ActionResult> {
   const supabase = await createClient();
 
+  const birthDate = formData.get('birth_date') as string;
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -269,7 +281,7 @@ export async function updateUserProfile(
     phone_number: formData.get("phone_number") as string,
     region_id: formData.get("region_id") as string,
     cpf,
-    birth_date: (formData.get("birth_date") as string) || null,
+    birth_date: formatDateForDB(birthDate),
     occupation: (formData.get("occupation") as string) || null,
     motivation: (formData.get("motivation") as string) || null,
   };
@@ -327,7 +339,7 @@ export async function getUsersWithRoles() {
 
   return data.map((u) => ({
     ...u,
-    // @ts-ignore
+    // @ts-expect-error - Supabase infere 'region' como array, mas usamos !inner para garantir que seja um objeto
     region_name: u.region.name ?? null,
 })); }
 
@@ -418,7 +430,7 @@ export async function getReferredSupporters() {
     
   return data.map(u => ({
     ...u,
-    // @ts-ignore
+    // @ts-expect-error - Supabase infere 'region' como array, mas usamos !inner para garantir que seja um objeto
     region_name: u.region.name ?? 'N/A'
 })); }
 

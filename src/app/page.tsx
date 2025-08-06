@@ -18,7 +18,7 @@ export default async function HomePage() {
 
   const bossInfo = {
     name: "Juntos com Estêvão Reis",
-    bio: "Chefe da Ass. Artic. Instit. da Vice-Governadoria",
+    bio: "Chefe da Assessoria de Relações Institucionais da Vice-Governadoria",
     socials: [
       { name: "Instagram", url: "https://instagram.com/estevao_reis", icon: <Instagram className="h-6 w-6" /> },
       { name: "Facebook", url: "https://facebook.com/estevaoreisdf", icon: <Facebook className="h-6 w-6" /> },
@@ -55,9 +55,9 @@ export default async function HomePage() {
       <section id="cadastro" className="py-20 bg-muted/40">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">Junte-se ao Movimento</h2>
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter">Junte-se a Nós</h2>
             <p className="mt-4 max-w-xl mx-auto text-muted-foreground">
-              Preencha o formulário abaixo para se tornar um apoiador e fazer parte da nossa rede.
+              Preencha o formulário de <strong>apoiador</strong> abaixo para fazer parte da nossa rede.
             </p>
           </div>
           <RegistrationForm leaders={leaders} regions={regions} />
