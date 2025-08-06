@@ -11,6 +11,7 @@ O sistema gerencia dois tipos principais de perfis:
 ### Funcionalidades Principais
 
 - **Cadastro Público:** Formulários para **Apoiadores** (`/cadastro`) e para aspirantes a **Líderes** (`/seja-um-lider`).
+- **Upgrade de Apoiador para Líder:** Se um apoiador já cadastrado utiliza o formulário para se tornar líder com o mesmo e-mail, o sistema automaticamente atualiza seu perfil, convertendo-o em líder sem criar uma nova conta.
 - **Autenticação e Perfis:** Sistema completo de login/logout via Supabase Auth. A criação de um perfil na tabela `Users` é automatizada por um **Trigger** do PostgreSQL no momento do cadastro.
 - **Gestão de Perfil:** Usuários logados podem editar suas informações e fazer upload de uma foto de perfil, que é armazenada no Supabase Storage.
 - **Link de Convite:** Líderes têm acesso a um link de convite exclusivo para recrutar novos apoiadores.
@@ -18,7 +19,7 @@ O sistema gerencia dois tipos principais de perfis:
 - **Painel do Admin (`/admin`):**
   - **Dashboard de Desempenho:** Visualiza a contagem de apoiadores por líder.
   - **Gerenciamento de Avisos:** Envia, edita e exclui comunicados para os líderes.
-  - **Gerenciamento de Usuários:** Visualiza todos os usuários e pode promover Líderes a Administradores.
+  - **Gerenciamento de Usuários:** Visualiza todos os usuários e pode promover Líderes a Administradores, editar informações sensíveis (e-mail, CPF) e excluir usuários da plataforma.
 - **Rotas Protegidas:** Uso de Middleware para proteger rotas com base na autenticação do usuário.
 
 ## Tecnologias Utilizadas
@@ -35,12 +36,12 @@ O sistema gerencia dois tipos principais de perfis:
 1.  `/`: Página inicial com informações e formulário de cadastro para **Apoiadores**.
 2.  `/login`: Página de autenticação para Líderes e Administradores.
 3.  `/cadastro`: Formulário público para cadastro de novos Apoiadores. Também lida com links de convite (ex: `/cadastro?ref=ID_DO_LIDER`).
-4.  `/seja-um-lider`: Formulário de cadastro para novos **Líderes**, que cria uma conta de usuário autenticada.
+4.  `/seja-um-lider`: Formulário de cadastro para novos **Líderes**. Caso um **Apoiador** já cadastrado use o mesmo e-mail, sua conta é automaticamente atualizada para o perfil de Líder.
 5.  `/painel`: Dashboard do **Líder** (rota protegida), exibindo seus apoiadores indicados e o mural de avisos.
 6.  `/painel/perfil`: Página para o usuário logado (Líder/Admin) editar suas informações, carregar foto e obter seu link de convite.
 7.  `/admin/dashboard`: Dashboard principal do **Administrador** (rota protegida) com o relatório de desempenho dos líderes.
 8.  `/admin/announcements`: Painel para o Admin gerenciar os avisos para os líderes.
-9.  `/admin/usuarios`: Painel para o Admin visualizar todos os usuários e promover Líderes a Administradores.
+9.  `/admin/usuarios`: Painel para o Admin visualizar todos os usuários e gerenciar suas permissões, informações e existência na plataforma.
 
 ## Como Rodar Localmente
 

@@ -91,22 +91,19 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
     return {
       success: false,
       message: "Por favor, preencha todos os campos essenciais.",
-    };
-  }
+  }; }
 
   if (password.length < 6) {
     return {
       success: false,
       message: "A senha deve ter no mínimo 6 caracteres.",
-    };
-  }
+  }; }
 
   const cleanedCpf = cpf.replace(/[^\d]+/g, "");
   if (!validateCPF(cleanedCpf)) {
     return { success: false, message: "CPF inválido." };
   }
 
-  // Verifica se já existe um Apoiador com este e-mail
   const { data: existingSupporter } = await supabase
     .from("Users")
     .select("id, auth_id, role")
@@ -115,7 +112,6 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
 
   if (existingSupporter) {
     if (existingSupporter.role === "SUPPORTER" && !existingSupporter.auth_id) {
-      // --- FLUXO DE UPGRADE DE APOIADOR PARA LÍDER ---
       const { data: { user }, error: signUpError } = await supabase.auth.signUp({ email, password });
 
       if (signUpError) {
@@ -333,40 +329,60 @@ export async function updateUserProfile(
 ): Promise<ActionResult> {
   const supabase = await createClient();
 
-  const birthDate = formData.get('birth_date') as string;
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return {
-      success: false,
-      message: "Usuário não autenticado. Acesso negado.",
-  }; }
+    return { success: false, message: "Usuário não autenticado. Acesso negado." };
+  }
 
   const profileId = formData.get("id") as string;
 
-  const { data: userProfile, error: userError } = await supabase
-    .from("Users")
-    .select("auth_id")
-    .eq("id", profileId)
-    .single();
+  if (profileId !== user.id) {
+    return { success: false, message: "Você não tem permissão para editar este perfil." };
+  }
+  
+  const { data: profile } = await supabase.from('Users').select('role, email, cpf').eq('id', profileId).single();
+  if (!profile) {
+    return { success: false, message: "Perfil não encontrado." };
+  }
 
-  if (userError || !userProfile || userProfile.auth_id !== user.id) {
-    return {
-      success: false,
-      message: "Você não tem permissão para editar este perfil.",
-  }; }
-
-  const profileData = {
+  const isAdmin = profile.role === 'ADMIN';
+  
+  const profileData: { [key: string]: any } = {
     name: formData.get("name") as string,
     phone_number: formData.get("phone_number") as string,
     region_id: formData.get("region_id") as string,
-    
-    birth_date: formatDateForDB(birthDate),
+    birth_date: formatDateForDB(formData.get('birth_date') as string),
     occupation: (formData.get("occupation") as string) || null,
     motivation: (formData.get("motivation") as string) || null,
   };
+
+  if (isAdmin) {
+    const newEmail = formData.get('email') as string;
+    const newCpf = formData.get('cpf') as string;
+
+    if (newEmail && newEmail !== profile.email) {
+      const { data: existingEmail } = await supabase.from('Users').select('id').eq('email', newEmail).not('id', 'eq', profileId).single();
+      if (existingEmail) {
+        return { success: false, message: "O e-mail informado já está em uso." };
+      }
+      const { error: authError } = await supabase.auth.updateUser({ email: newEmail });
+      if (authError) {
+        return { success: false, message: `Falha ao atualizar e-mail de login: ${authError.message}` };
+      }
+      profileData.email = newEmail;
+    }
+
+    if (newCpf && newCpf !== profile.cpf) {
+      const cleanedCpf = newCpf.replace(/[^\d]+/g, "");
+      if (!validateCPF(cleanedCpf)) {
+        return { success: false, message: "CPF inválido." };
+      }
+      const { data: existingCpf } = await supabase.from('Users').select('id').eq('cpf', cleanedCpf).not('id', 'eq', profileId).single();
+      if (existingCpf) {
+        return { success: false, message: "O CPF informado já está em uso." };
+      }
+      profileData.cpf = cleanedCpf;
+  } }
 
   const { error } = await supabase
     .from("Users")
@@ -375,10 +391,8 @@ export async function updateUserProfile(
 
   if (error) {
     console.error("Erro ao atualizar perfil:", error);
-    return {
-      success: false,
-      message: `Falha ao salvar alterações: ${error.message}`,
-  }; }
+    return { success: false, message: `Falha ao salvar alterações: ${error.message}` };
+  }
 
   revalidatePath("/painel/perfil");
   revalidatePath("/", "layout");

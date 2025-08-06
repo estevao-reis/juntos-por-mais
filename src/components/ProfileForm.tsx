@@ -20,6 +20,7 @@ type UserProfile = {
   birth_date: string | null;
   occupation: string | null;
   motivation: string | null;
+  role?: 'ADMIN' | 'LEADER' | 'SUPPORTER';
 };
 
 interface BaseData {
@@ -67,11 +68,9 @@ export function ProfileForm({ user, regions }: ProfileFormProps) {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const formattedBirthDate = formatDateForDisplay(user.birth_date);
+  const isAdmin = user.role === 'ADMIN';
 
   const handleFormAction = async (formData: FormData) => {
-    if(user.cpf) {
-      formData.append('cpf', user.cpf);
-    }
     const result = await updateUserProfile(formData);
     setMessage(result.message);
     setIsSuccess(result.success);
@@ -88,12 +87,12 @@ export function ProfileForm({ user, regions }: ProfileFormProps) {
                   <Input type="text" id="name" name="name" required defaultValue={user.name ?? ''} />
                 </div>
                  <div className="grid gap-2">
-                    <Label htmlFor="email">E-mail (não pode ser alterado)</Label>
-                    <Input type="email" id="email" name="email" disabled defaultValue={user.email} />
+                    <Label htmlFor="email">E-mail {isAdmin ? '(Editável)' : '(Não pode ser alterado)'}</Label>
+                    <Input type="email" id="email" name="email" disabled={!isAdmin} defaultValue={user.email} />
                 </div>
                  <div className="grid gap-2">
-                    <Label htmlFor="cpf">CPF</Label>
-                    <Input type="text" id="cpf" name="cpf" disabled defaultValue={maskCPF(user.cpf)} />
+                    <Label htmlFor="cpf">CPF {isAdmin && '(Editável)'}</Label>
+                    <Input type="text" id="cpf" name="cpf" disabled={!isAdmin} defaultValue={isAdmin ? (user.cpf ?? '') : maskCPF(user.cpf)} />
                 </div>
                 <div className="grid gap-2">
                     <Label htmlFor="phone_number">Telefone</Label>
