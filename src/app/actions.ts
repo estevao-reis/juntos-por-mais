@@ -31,6 +31,7 @@ function formatDateForDB(dateStr: string | null): string | null {
   return `${year}-${month}-${day}`;
 }
 
+
 export async function registerPartner(
   formData: FormData
 ): Promise<ActionResult> {
@@ -72,6 +73,7 @@ export async function registerPartner(
     message: "Cadastro realizado com sucesso! Obrigado por seu apoio.",
 }; }
 
+
 export async function signUpLeader(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
 
@@ -95,9 +97,22 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
       message: "A senha deve ter no mínimo 6 caracteres.",
   }; }
 
+  const cleanedCpf = cpf.replace(/[^\d]+/g, "");
+
   if (!validateCPF(cpf)) {
     return { success: false, message: "CPF inválido." };
   }
+
+  const { data: existingUser, error: existingUserError } = await supabase
+    .from("Users")
+    .select("id")
+    .eq("cpf", cleanedCpf)
+    .single();
+
+  if (existingUser) {
+    return { success: false, message: "Este CPF já está cadastrado." };
+  }
+
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -105,7 +120,7 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
     options: {
       data: {
         name,
-        cpf,
+        cpf: cleanedCpf,
         phone_number,
         region_id,
         birth_date: formatDateForDB(birthDate),
@@ -115,6 +130,9 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
 
   if (error) {
     console.error("SignUp Error:", error);
+    if (error.message.includes('duplicate key value violates unique constraint "users_email_key"')) {
+        return { success: false, message: "Este e-mail já está em uso." };
+    }
     return { success: false, message: `Falha ao cadastrar: ${error.message}` };
   }
 
@@ -129,6 +147,7 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
     success: true,
     message: "Cadastro realizado com sucesso! Verifique seu e-mail para confirmação.",
 }; }
+
 
 export async function signIn(
   formData: FormData
@@ -158,6 +177,7 @@ export async function signOut() {
   revalidatePath("/", "layout");
   return redirect("/login");
 }
+
 
 export async function sendAnnouncement(
   formData: FormData
@@ -262,6 +282,7 @@ export async function deleteAnnouncement(id: string): Promise<ActionResult> {
   return { success: true, message: "Aviso excluído com sucesso!" };
 }
 
+
 export async function updateUserProfile(
   formData: FormData
 ): Promise<ActionResult> {
@@ -280,22 +301,23 @@ export async function updateUserProfile(
 
   const profileId = formData.get("id") as string;
 
-  if (user.id !== profileId) {
+  const { data: userProfile, error: userError } = await supabase
+    .from("Users")
+    .select("auth_id")
+    .eq("id", profileId)
+    .single();
+
+  if (userError || !userProfile || userProfile.auth_id !== user.id) {
     return {
       success: false,
       message: "Você não tem permissão para editar este perfil.",
   }; }
 
-  const cpf = formData.get("cpf") as string;
-  if (!validateCPF(cpf)) {
-    return { success: false, message: "CPF inválido." };
-  }
-
   const profileData = {
     name: formData.get("name") as string,
     phone_number: formData.get("phone_number") as string,
     region_id: formData.get("region_id") as string,
-    cpf,
+    
     birth_date: formatDateForDB(birthDate),
     occupation: (formData.get("occupation") as string) || null,
     motivation: (formData.get("motivation") as string) || null,
@@ -318,6 +340,7 @@ export async function updateUserProfile(
 
   return { success: true, message: "Perfil atualizado com sucesso!" };
 }
+
 
 export async function getUsersWithRoles() {
   const supabase = await createClient();
@@ -357,6 +380,7 @@ export async function getUsersWithRoles() {
     // @ts-expect-error - Supabase infere 'region' como array, mas usamos !inner para garantir que seja um objeto
     region_name: u.region.name ?? null,
 })); }
+
 
 export async function updateUserRole(
   userId: string,
@@ -423,6 +447,7 @@ export async function updateAvatarUrl(newUrl: string): Promise<ActionResult> {
   return { success: true, message: 'Foto de perfil atualizada.' };
 }
 
+
 export async function getReferredSupporters() {
   const supabase = await createClient();
 
@@ -448,6 +473,7 @@ export async function getReferredSupporters() {
     // @ts-expect-error - Supabase infere 'region' como array, mas usamos !inner para garantir que seja um objeto
     region_name: u.region.name ?? 'N/A'
 })); }
+
 
 export async function removeAvatar(): Promise<ActionResult> {
   const supabase = await createClient();

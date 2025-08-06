@@ -46,7 +46,7 @@ CREATE TABLE public."Users" (
 
   role public.user_role, 
   leader_id uuid,
-  cpf text,           
+  cpf text UNIQUE,
   motivation text,
 
   CONSTRAINT "Users_auth_id_fkey" FOREIGN KEY (auth_id) REFERENCES auth.users(id) ON DELETE SET NULL,
@@ -64,13 +64,31 @@ CREATE TABLE public."Announcements" (
   CONSTRAINT "Announcements_author_id_fkey" FOREIGN KEY (author_id) REFERENCES "Users"(id) ON DELETE CASCADE
 );
 
--- 5. Função e Trigger para criar perfil de usuário automaticamente
+-- 5. Função e Trigger para criar perfil de usuário automaticamente (VERSÃO CORRIGIDA)
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER SET search_path = public
 AS $$
+DECLARE
+  -- Variáveis para armazenar os metadados de forma mais segura
+  user_name text;
+  user_phone_number text;
+  user_region_id uuid;
+  user_cpf text;
+  user_birth_date date;
+  user_occupation text;
+  user_motivation text;
 BEGIN
+  -- Extrai todos os valores dos metadados para variáveis locais primeiro
+  user_name := new.raw_user_meta_data->>'name';
+  user_phone_number := new.raw_user_meta_data->>'phone_number';
+  user_region_id := (new.raw_user_meta_data->>'region_id')::uuid;
+  user_cpf := new.raw_user_meta_data->>'cpf'; -- Extração explícita do CPF
+  user_birth_date := (new.raw_user_meta_data->>'birth_date')::date;
+  user_occupation := new.raw_user_meta_data->>'occupation';
+  user_motivation := new.raw_user_meta_data->>'motivation';
+
   INSERT INTO public."Users" (
     id, auth_id, email, name, role, 
     phone_number, region_id, cpf, birth_date, occupation, motivation
@@ -79,18 +97,19 @@ BEGIN
     new.id,
     new.id,
     new.email,
-    new.raw_user_meta_data->>'name',
+    user_name,
     'LEADER',
-    new.raw_user_meta_data->>'phone_number',
-    (new.raw_user_meta_data->>'region_id')::uuid,
-    new.raw_user_meta_data->>'cpf',
-    (new.raw_user_meta_data->>'birth_date')::date,
-    new.raw_user_meta_data->>'occupation',
-    new.raw_user_meta_data->>'motivation'
+    user_phone_number,
+    user_region_id,
+    user_cpf, -- Usa a variável local
+    user_birth_date,
+    user_occupation,
+    user_motivation
   );
   RETURN new;
 END;
 $$;
+
 
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
