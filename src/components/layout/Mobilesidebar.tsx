@@ -21,7 +21,7 @@ const publicLinks = [
 ];
 
 const guestLinks = [
-    { href: '/seja-um-lider', label: 'Seja um Líder', icon: UserPlus },
+    { href: '/seja-um-lider', label: 'Sou Líder e Quero Atuar', icon: UserPlus },
 ]
 
 const leaderLinks = [

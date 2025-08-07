@@ -25,7 +25,6 @@ export default async function ProfilePage() {
     return redirect('/painel'); 
   }
 
-
   return (
     <div className="container mx-auto p-8">
         <header className="mb-10">
@@ -41,7 +40,9 @@ export default async function ProfilePage() {
               currentAvatarUrl={profileData.profile_picture_url} 
             />
             
-            <ReferralLink userId={profileData.id} />
+            {profileData.role === 'LEADER' && (
+              <ReferralLink userId={profileData.id} />
+            )}
 
             <div className="grid gap-4">
               <h2 className="text-2xl font-semibold tracking-tight">Editar Informações</h2>

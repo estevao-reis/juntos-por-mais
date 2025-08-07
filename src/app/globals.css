@@ -119,3 +119,20 @@
   body {
     @apply bg-background text-foreground flex flex-col min-h-screen;
 } }
+
+@layer utilities {
+  .bg-sprinkle-pattern {
+    --dot-color: theme('colors.slate.400');
+
+    background-image:
+      radial-gradient(var(--dot-color) 1.5px, transparent 1.5px),
+      radial-gradient(var(--dot-color) 1px, transparent 1px);
+
+    background-size:
+      60px 60px,
+      40px 40px;
+    
+    background-position:
+      0 0,
+      20px 20px; 
+} }

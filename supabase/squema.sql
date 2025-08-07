@@ -1,7 +1,8 @@
--- Supabase Schema Setup (Versão Robusta e Re-executável)
+-- Supabase Schema Setup (Versão Final, Robusta e Re-executável)
 
--- Bloco de Limpeza (DROP): Executado na ordem inversa de dependência para evitar erros.
+-- Bloco de Limpeza (DROP)
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+DROP FUNCTION IF EXISTS public.get_my_role();
 DROP FUNCTION IF EXISTS public.handle_new_user();
 DROP FUNCTION IF EXISTS public.get_leader_partner_counts();
 DROP TABLE IF EXISTS public."Announcements";
@@ -9,183 +10,109 @@ DROP TABLE IF EXISTS public."Users";
 DROP TABLE IF EXISTS public."AdministrativeRegions";
 DROP TYPE IF EXISTS public.user_role;
 
--- Bloco de Criação (CREATE): Executado na ordem correta de dependência.
+-- Bloco de Criação (CREATE)
 
--- 1. Criar o tipo ENUM 'user_role'
-CREATE TYPE public.user_role AS ENUM (
-  'ADMIN',
-  'LEADER',
-  'SUPPORTER'
-);
+-- 1. Tipos e Tabelas
+CREATE TYPE public.user_role AS ENUM ('ADMIN', 'LEADER', 'SUPPORTER');
 
--- 2. Criar a tabela 'AdministrativeRegions'
 CREATE TABLE public."AdministrativeRegions" (
   id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL UNIQUE
 );
 
--- Populando com as 35 RAs do DF
 INSERT INTO public."AdministrativeRegions" (name) VALUES
 ('Plano Piloto'), ('Gama'), ('Taguatinga'), ('Brazlândia'), ('Sobradinho'), ('Planaltina'), ('Paranoá'), ('Núcleo Bandeireante'), ('Ceilândia'), ('Guará'), ('Cruzeiro'), ('Samambaia'), ('Santa Maria'), ('São Sebastião'), ('Recanto das Emas'), ('Lago Sul'), ('Riacho Fundo'), ('Lago Norte'), ('Candangolândia'), ('Águas Claras'), ('Riacho Fundo II'), ('Sudoeste/Octogonal'), ('Varjão'), ('Park Way'), ('SCIA'), ('Sobradinho II'), ('Jardim Botânico'), ('Itapoã'), ('SIA'), ('Vicente Pires'), ('Fercal'), ('Sol Nascente/Pôr do Sol'), ('Arniqueira'), ('Arapoanga'), ('Água Quente');
 
--- 3. Criar a tabela 'Users'
 CREATE TABLE public."Users" (
   id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-  auth_id uuid NULL UNIQUE, 
+  auth_id uuid NULL UNIQUE REFERENCES auth.users(id) ON DELETE SET NULL,
   created_at timestamptz NOT NULL DEFAULT now(),
-  
   name text,
   email text UNIQUE,
   phone_number text, 
-  region_id uuid,
-  
+  region_id uuid REFERENCES public."AdministrativeRegions"(id),
   profile_picture_url text,
   birth_date date,
   occupation text,
   interests text[],
-
   role public.user_role, 
-  leader_id uuid,
+  leader_id uuid REFERENCES public."Users"(id) ON DELETE SET NULL,
   cpf text UNIQUE,
-  motivation text,
-
-  CONSTRAINT "Users_auth_id_fkey" FOREIGN KEY (auth_id) REFERENCES auth.users(id) ON DELETE SET NULL,
-  CONSTRAINT "Users_leader_id_fkey" FOREIGN KEY (leader_id) REFERENCES "Users"(id) ON DELETE SET NULL,
-  CONSTRAINT "Users_region_id_fkey" FOREIGN KEY (region_id) REFERENCES "AdministrativeRegions"(id)
+  motivation text
 );
 
--- 4. Criar a tabela 'Announcements'
 CREATE TABLE public."Announcements" (
   id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at timestamptz NOT NULL DEFAULT now(),
   content text NOT NULL,
-  author_id uuid NOT NULL,
-  target_audience text NOT NULL DEFAULT 'ALL_LEADERS'::text,
-  CONSTRAINT "Announcements_author_id_fkey" FOREIGN KEY (author_id) REFERENCES "Users"(id) ON DELETE CASCADE
+  author_id uuid NOT NULL REFERENCES public."Users"(id) ON DELETE CASCADE,
+  target_audience text NOT NULL DEFAULT 'ALL_LEADERS'::text
 );
 
--- 5. Função e Trigger para criar perfil de usuário automaticamente (VERSÃO CORRIGIDA)
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-SECURITY DEFINER SET search_path = public
-AS $$
-DECLARE
-  -- Variáveis para armazenar os metadados de forma mais segura
-  user_name text;
-  user_phone_number text;
-  user_region_id uuid;
-  user_cpf text;
-  user_birth_date date;
-  user_occupation text;
-  user_motivation text;
-BEGIN
-  -- Extrai todos os valores dos metadados para variáveis locais primeiro
-  user_name := new.raw_user_meta_data->>'name';
-  user_phone_number := new.raw_user_meta_data->>'phone_number';
-  user_region_id := (new.raw_user_meta_data->>'region_id')::uuid;
-  user_cpf := new.raw_user_meta_data->>'cpf'; -- Extração explícita do CPF
-  user_birth_date := (new.raw_user_meta_data->>'birth_date')::date;
-  user_occupation := new.raw_user_meta_data->>'occupation';
-  user_motivation := new.raw_user_meta_data->>'motivation';
+-- 2. Funções e Triggers
 
-  INSERT INTO public."Users" (
-    id, auth_id, email, name, role, 
-    phone_number, region_id, cpf, birth_date, occupation, motivation
-  )
+-- **NOVA FUNÇÃO HELPER DE SEGURANÇA**
+-- Esta função busca a role do usuário atual de forma segura, sem causar recursão.
+CREATE OR REPLACE FUNCTION public.get_my_role()
+RETURNS public.user_role
+LANGUAGE sql STABLE SECURITY DEFINER
+AS $$  SELECT "role" FROM public."Users" WHERE auth_id = auth.uid()$$;
+
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  INSERT INTO public."Users" (auth_id, email, name, role, cpf, phone_number, region_id, birth_date, occupation, motivation)
   VALUES (
-    new.id,
-    new.id,
-    new.email,
-    user_name,
-    'LEADER',
-    user_phone_number,
-    user_region_id,
-    user_cpf, -- Usa a variável local
-    user_birth_date,
-    user_occupation,
-    user_motivation
+    new.id, new.email, new.raw_user_meta_data->>'name', 'LEADER',
+    new.raw_user_meta_data->>'cpf', new.raw_user_meta_data->>'phone_number',
+    (new.raw_user_meta_data->>'region_id')::uuid, (new.raw_user_meta_data->>'birth_date')::date,
+    new.raw_user_meta_data->>'occupation', new.raw_user_meta_data->>'motivation'
   );
   RETURN new;
 END;
 $$;
 
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
-CREATE TRIGGER on_auth_user_created
-  AFTER INSERT ON auth.users
-  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
-
--- 6. Função RPC 'get_leader_partner_counts'
 CREATE OR REPLACE FUNCTION public.get_leader_partner_counts()
-RETURNS TABLE (
-  leader_id uuid,
-  leader_name text,
-  partner_count bigint
-)
-AS $$
+RETURNS TABLE (leader_id uuid, leader_name text, partner_count bigint) AS $$
 BEGIN
   RETURN QUERY
-  SELECT
-    leaders.id as leader_id,
-    leaders.name as leader_name,
-    count(partners.id) as partner_count
-  FROM
-    public."Users" as leaders
-  LEFT JOIN
-    public."Users" as partners ON leaders.id = partners.leader_id AND partners.role = 'SUPPORTER'
-  WHERE
-    leaders.role = 'LEADER'
-  GROUP BY
-    leaders.id, leaders.name
-  ORDER BY
-    partner_count DESC,
-    leader_name ASC;
+  SELECT l.id, l.name, count(p.id)
+  FROM public."Users" as l
+  LEFT JOIN public."Users" as p ON l.id = p.leader_id AND p.role = 'SUPPORTER'
+  WHERE l.role = 'LEADER'
+  GROUP BY l.id, l.name ORDER BY partner_count DESC, leader_name ASC;
 END;
 $$ LANGUAGE plpgsql;
 
-
--- 7. Configuração do Supabase Storage para Avatares
+-- 3. Storage
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 VALUES ('avatars', 'avatars', true, 5242880, ARRAY['image/jpeg', 'image/png', 'image/webp'])
 ON CONFLICT (id) DO NOTHING;
 
-CREATE POLICY "Avatar images are publicly viewable."
-ON storage.objects FOR SELECT
-USING ( bucket_id = 'avatars' );
-
-CREATE POLICY "User can insert their own avatar."
-ON storage.objects FOR INSERT
-TO authenticated WITH CHECK ( (bucket_id = 'avatars') AND (auth.uid() = owner) );
-
-CREATE POLICY "User can update their own avatar."
-ON storage.objects FOR UPDATE
-TO authenticated USING ( (bucket_id = 'avatars') AND (auth.uid() = owner) );
-
-CREATE POLICY "User can delete their own avatar."
-ON storage.objects FOR DELETE
-TO authenticated USING ( (bucket_id = 'avatars') AND (auth.uid() = owner) );
-
-
-
-
-
+-- 4. Políticas de Segurança (RLS)
 ALTER TABLE public."Users" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."Announcements" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."AdministrativeRegions" ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Admins podem gerenciar todos os perfis" ON public."Users" FOR ALL
-  USING ( (SELECT role FROM public."Users" WHERE auth_id = auth.uid()) = 'ADMIN' );
+-- POLÍTICAS PARA "Users"
+DROP POLICY IF EXISTS "Leitura pública de nomes de líderes" ON public."Users";
+CREATE POLICY "Leitura pública de nomes de líderes" ON public."Users" FOR SELECT USING (role = 'LEADER');
 
-CREATE POLICY "Usuários podem visualizar seu próprio perfil" ON public."Users" FOR SELECT
-  USING ( auth_id = auth.uid() );
+DROP POLICY IF EXISTS "Usuários podem ver e editar seu próprio perfil" ON public."Users";
+CREATE POLICY "Usuários podem ver e editar seu próprio perfil" ON public."Users" FOR ALL USING ( auth_id = auth.uid() );
 
-CREATE POLICY "Usuários podem atualizar seu próprio perfil" ON public."Users" FOR UPDATE
-  USING ( auth_id = auth.uid() );
+DROP POLICY IF EXISTS "Admins podem gerenciar todos os perfis" ON public."Users";
+CREATE POLICY "Admins podem gerenciar todos os perfis" ON public."Users" FOR ALL USING ( public.get_my_role() = 'ADMIN' );
 
-CREATE POLICY "Usuários autenticados podem ver líderes e RAs" ON public."Users" FOR SELECT
-  USING ( role = 'LEADER' OR role = 'SUPPORTER' );
+-- POLÍTICAS PARA "Announcements"
+DROP POLICY IF EXISTS "Líderes e Admins podem ver os avisos" ON public."Announcements";
+CREATE POLICY "Líderes e Admins podem ver os avisos" ON public."Announcements" FOR SELECT USING ( auth.role() = 'authenticated' );
 
-CREATE POLICY "Admins podem gerenciar todos os avisos" ON public."Announcements" FOR ALL
-  USING ( (SELECT role FROM public."Users" WHERE auth_id = auth.uid()) = 'ADMIN' );
+DROP POLICY IF EXISTS "Admins podem gerenciar todos os avisos" ON public."Announcements";
+CREATE POLICY "Admins podem gerenciar todos os avisos" ON public."Announcements" FOR ALL USING ( public.get_my_role() = 'ADMIN' );
 
-CREATE POLICY "Usuários autenticados podem ver os avisos" ON public."Announcements" FOR SELECT
-  USING ( auth.role() = 'authenticated' );
+-- POLÍTICAS PARA "AdministrativeRegions"
+DROP POLICY IF EXISTS "Leitura pública das RAs" ON public."AdministrativeRegions";
+CREATE POLICY "Leitura pública das RAs" ON public."AdministrativeRegions" FOR SELECT USING (true);

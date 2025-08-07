@@ -11,7 +11,7 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent
 } from '@/components/ui/navigation-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet'; 
 import { Menu } from 'lucide-react';
 import { signOut } from '@/app/actions';
 import { MobileSidebar } from './Mobilesidebar';
@@ -100,6 +100,9 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
             <Button variant="outline" size="icon"><Menu className="size-5" /></Button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0">
+            <SheetTitle className="sr-only">Menu Principal</SheetTitle>
+            <SheetDescription className="sr-only">Navegação principal do site.</SheetDescription>
+            
             <MobileSidebar user={user} isAdmin={isAdmin} onClose={() => setMobileMenuOpen(false)} />
           </SheetContent>
         </Sheet>

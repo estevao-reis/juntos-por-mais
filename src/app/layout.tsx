@@ -21,7 +21,8 @@ export const metadata: Metadata = {
   description: "Plataforma de parceiros.",
   icons: {
     icon: '/logo.png',
-}, };
+  },
+};
 
 export default async function RootLayout({
   children,
@@ -38,7 +39,7 @@ export default async function RootLayout({
     const { data: profile } = await supabase
       .from('Users')
       .select('role, profile_picture_url')
-      .eq('id', user.id)
+      .eq('auth_id', user.id)
       .single();
     
     if (profile) {
@@ -56,4 +57,4 @@ export default async function RootLayout({
         <Footer /> 
       </body>
     </html>
-)};
+); }

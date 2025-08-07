@@ -23,5 +23,4 @@ export default async function HomePage() {
       <AboutSection />
       <CTASection leaders={leaders} regions={regions} />
     </>
-  );
-}
+); }

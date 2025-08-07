@@ -55,15 +55,15 @@ export function AboutSection() {
             </h2>
 
             <div 
-              className="text-lg text-foreground/80 leading-relaxed space-y-6 text-left transition-[max-height] duration-700 ease-in-out overflow-hidden"
-              style={{ maxHeight: isExpanded ? '1000px' : '260px' }}
+              className={cn(
+                "relative text-lg text-foreground/80 leading-relaxed text-center lg:text-left transition-[max-height] duration-700 ease-in-out",
+                !isExpanded && "[mask-image:linear-gradient(to_bottom,black_60%,transparent_100%)]"
+              )}
+              style={{ maxHeight: isExpanded ? '1200px' : '320px' }}
             >
-                {bio.paragraphs.slice(0, 2).map((paragraph, index) => (
+              <div className="space-y-6">
+                {bio.paragraphs.map((paragraph, index) => (
                     <p key={index}>{paragraph}</p>
-                ))}
-              <div className={cn("space-y-6", { 'hidden': !isExpanded })}>
-                {bio.paragraphs.slice(2).map((paragraph, index) => (
-                  <p key={index + 2}>{paragraph}</p>
                 ))}
               </div>
             </div>
