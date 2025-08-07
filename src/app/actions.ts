@@ -240,12 +240,16 @@ export async function sendAnnouncement(
 
   const { data: profile, error: profileError } = await supabase
     .from('Users')
-    .select('id')
+    .select('id, role')
     .eq('auth_id', user.id)
     .single();
 
   if (profileError || !profile) {
-    return { success: false, message: "Não foi possível encontrar o perfil do administrador." };
+    return { success: false, message: "Não foi possível encontrar o perfil do usuário." };
+  }
+  
+  if (profile.role !== 'ADMIN') {
+      return { success: false, message: "Acesso negado. Permissão de administrador necessária." };
   }
 
   const announcementData = {
@@ -274,17 +278,17 @@ export async function updateAnnouncement(
 ): Promise<ActionResult> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "Acesso negado." };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "Acesso negado: Usuário não autenticado." };
+  
   const { data: profile } = await supabase
     .from("Users")
     .select("role")
-    .eq("id", user.id)
+    .eq("auth_id", user.id)
     .single();
+    
   if (profile?.role !== "ADMIN")
-    return { success: false, message: "Acesso negado." };
+    return { success: false, message: "Acesso negado: Permissão de administrador necessária." };
 
   const id = formData.get("id") as string;
   const content = formData.get("content") as string;
@@ -311,17 +315,17 @@ export async function updateAnnouncement(
 export async function deleteAnnouncement(id: string): Promise<ActionResult> {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { success: false, message: "Acesso negado." };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "Acesso negado: Usuário não autenticado." };
+  
   const { data: profile } = await supabase
     .from("Users")
     .select("role")
-    .eq("id", user.id)
+    .eq("auth_id", user.id)
     .single();
+    
   if (profile?.role !== "ADMIN")
-    return { success: false, message: "Acesso negado." };
+    return { success: false, message: "Acesso negado: Permissão de administrador necessária." };
 
   const { error } = await supabase.from("Announcements").delete().eq("id", id);
 
@@ -341,24 +345,40 @@ export async function updateUserProfile(
 ): Promise<ActionResult> {
   const supabase = await createClient();
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  if (!currentUser) {
     return { success: false, message: "Usuário não autenticado. Acesso negado." };
   }
-
-  const profileId = formData.get("id") as string;
-
-  if (profileId !== user.id) {
-    return { success: false, message: "Você não tem permissão para editar este perfil." };
-  }
   
-  const { data: profile } = await supabase.from('Users').select('role, email, cpf').eq('id', profileId).single();
-  if (!profile) {
-    return { success: false, message: "Perfil não encontrado." };
+  const profileIdToEdit = formData.get("id") as string;
+  
+  const { data: profileToEdit, error: findError } = await supabase
+    .from('Users')
+    .select('auth_id, email, cpf')
+    .eq('id', profileIdToEdit)
+    .single();
+
+  if (findError || !profileToEdit) {
+      return { success: false, message: "Perfil a ser editado não encontrado." };
   }
 
-  const isAdmin = profile.role === 'ADMIN';
-  
+  const { data: currentUserProfile } = await supabase
+    .from('Users')
+    .select('role')
+    .eq('auth_id', currentUser.id)
+    .single();
+
+  if (!currentUserProfile) {
+      return { success: false, message: "Perfil do usuário atual não encontrado." };
+  }
+
+  const isOwner = profileToEdit.auth_id === currentUser.id;
+  const isAdmin = currentUserProfile.role === 'ADMIN';
+
+  if (!isOwner && !isAdmin) {
+      return { success: false, message: "Você não tem permissão para editar este perfil." };
+  }
+
   const profileData: { [key: string]: string | null } = {
     name: formData.get("name") as string,
     phone_number: formData.get("phone_number") as string,
@@ -372,24 +392,25 @@ export async function updateUserProfile(
     const newEmail = formData.get('email') as string;
     const newCpf = formData.get('cpf') as string;
 
-    if (newEmail && newEmail !== profile.email) {
-      const { data: existingEmail } = await supabase.from('Users').select('id').eq('email', newEmail).not('id', 'eq', profileId).single();
+    if (newEmail && newEmail !== profileToEdit.email) {
+      const { data: existingEmail } = await supabase.from('Users').select('id').eq('email', newEmail).not('id', 'eq', profileIdToEdit).single();
       if (existingEmail) {
         return { success: false, message: "O e-mail informado já está em uso." };
       }
-      const { error: authError } = await supabase.auth.updateUser({ email: newEmail });
-      if (authError) {
-        return { success: false, message: `Falha ao atualizar e-mail de login: ${authError.message}` };
-      }
+      if (profileToEdit.auth_id) {
+        const { error: authError } = await supabase.auth.admin.updateUserById(profileToEdit.auth_id, { email: newEmail });
+        if (authError) {
+          return { success: false, message: `Falha ao atualizar e-mail de login: ${authError.message}` };
+      } }
       profileData.email = newEmail;
     }
 
-    if (newCpf && newCpf !== profile.cpf) {
+    if (newCpf && newCpf !== profileToEdit.cpf) {
       const cleanedCpf = newCpf.replace(/[^\d]+/g, "");
       if (!validateCPF(cleanedCpf)) {
         return { success: false, message: "CPF inválido." };
       }
-      const { data: existingCpf } = await supabase.from('Users').select('id').eq('cpf', cleanedCpf).not('id', 'eq', profileId).single();
+      const { data: existingCpf } = await supabase.from('Users').select('id').eq('cpf', cleanedCpf).not('id', 'eq', profileIdToEdit).single();
       if (existingCpf) {
         return { success: false, message: "O CPF informado já está em uso." };
       }
@@ -399,7 +420,7 @@ export async function updateUserProfile(
   const { error } = await supabase
     .from("Users")
     .update(profileData)
-    .eq("id", profileId);
+    .eq("id", profileIdToEdit);
 
   if (error) {
     console.error("Erro ao atualizar perfil:", error);
@@ -407,6 +428,7 @@ export async function updateUserProfile(
   }
 
   revalidatePath("/painel/perfil");
+  revalidatePath("/admin/usuarios");
   revalidatePath("/", "layout");
 
   return { success: true, message: "Perfil atualizado com sucesso!" };
@@ -416,15 +438,15 @@ export async function updateUserProfile(
 export async function getUsersWithRoles() {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
+  
   const { data: profile } = await supabase
     .from("Users")
     .select("role")
-    .eq("id", user.id)
+    .eq("auth_id", user.id)
     .single();
+    
   if (profile?.role !== "ADMIN") return [];
 
   const { data, error } = await supabase
@@ -438,7 +460,7 @@ export async function getUsersWithRoles() {
             role,
             created_at,
             cpf,
-            region:AdministrativeRegions!inner(name)
+            region:AdministrativeRegions(name)
         `
     )
     .order("created_at", { ascending: false });
@@ -450,8 +472,8 @@ export async function getUsersWithRoles() {
 
   return data.map((u) => ({
     ...u,
-    // @ts-expect-error - Supabase infere 'region' como array, mas usamos !inner para garantir que seja um objeto
-    region_name: u.region.name ?? null,
+    // @ts-expect-error - Supabase infere 'region' como objeto ou array, garantimos que é objeto.
+    region_name: u.region?.name ?? null,
 })); }
 
 
@@ -470,7 +492,7 @@ export async function updateUserRole(
   const { data: adminProfile } = await supabase
     .from("Users")
     .select("role")
-    .eq("id", adminUser.id)
+    .eq("auth_id", adminUser.id)
     .single();
   if (adminProfile?.role !== "ADMIN") {
     return {
@@ -507,7 +529,7 @@ export async function updateAvatarUrl(newUrl: string): Promise<ActionResult> {
   const { error } = await supabase
     .from('Users')
     .update({ profile_picture_url: newUrl })
-    .eq('id', user.id);
+    .eq('auth_id', user.id);
 
   if (error) {
     console.error('Erro ao atualizar URL do avatar:', error);
@@ -528,11 +550,21 @@ export async function getReferredSupporters() {
   if (!user) {
     return [];
   }
+  
+  const { data: profile } = await supabase
+    .from('Users')
+    .select('id')
+    .eq('auth_id', user.id)
+    .single();
+    
+  if (!profile) {
+      return [];
+  }
 
   const { data, error } = await supabase
     .from('Users')
     .select('id, name, email, created_at, region:AdministrativeRegions(name)')
-    .eq('leader_id', user.id)
+    .eq('leader_id', profile.id)
     .eq('role', 'SUPPORTER')
     .order('created_at', { ascending: false });
 
@@ -543,8 +575,8 @@ export async function getReferredSupporters() {
     
   return data.map(u => ({
     ...u,
-    // @ts-expect-error - Supabase infere 'region' como array, mas usamos !inner para garantir que seja um objeto
-    region_name: u.region.name ?? 'N/A'
+    // @ts-expect-error - Supabase infere 'region' como objeto ou array, garantimos que é objeto.
+    region_name: u.region?.name ?? 'N/A'
 })); }
 
 
@@ -559,7 +591,7 @@ export async function removeAvatar(): Promise<ActionResult> {
   const { data: profile, error: profileError } = await supabase
     .from('Users')
     .select('profile_picture_url')
-    .eq('id', user.id)
+    .eq('auth_id', user.id)
     .single();
 
   if (profileError || !profile || !profile.profile_picture_url) {
@@ -574,13 +606,14 @@ export async function removeAvatar(): Promise<ActionResult> {
 
   if (storageError) {
     console.error('Erro ao remover avatar do Storage:', storageError);
-    return { success: false, message: 'Não foi possível remover o arquivo da foto.' };
-  }
+    if (storageError.message !== 'The resource was not found') {
+        return { success: false, message: 'Não foi possível remover o arquivo da foto.' };
+  } }
   
   const { error: updateError } = await supabase
     .from('Users')
     .update({ profile_picture_url: null })
-    .eq('id', user.id);
+    .eq('auth_id', user.id);
     
   if (updateError) {
     console.error('Erro ao limpar URL do avatar:', updateError);
@@ -599,7 +632,7 @@ export async function deleteUserByAdmin(userId: string, authId: string | null): 
   const { data: { user: adminUser } } = await supabase.auth.getUser();
   if (!adminUser) return { success: false, message: "Acesso negado: você não está autenticado." };
   
-  const { data: adminProfile } = await supabase.from('Users').select('role').eq('id', adminUser.id).single();
+  const { data: adminProfile } = await supabase.from('Users').select('role').eq('auth_id', adminUser.id).single();
   if (adminProfile?.role !== 'ADMIN') return { success: false, message: "Acesso negado: permissão de administrador necessária." };
   
   if (adminUser.id === authId) {
@@ -629,7 +662,7 @@ export async function updateUserCoreInfoByAdmin(formData: FormData): Promise<Act
 
     const { data: { user: adminUser } } = await supabase.auth.getUser();
     if (!adminUser) return { success: false, message: "Acesso negado." };
-    const { data: adminProfile } = await supabase.from('Users').select('role').eq('id', adminUser.id).single();
+    const { data: adminProfile } = await supabase.from('Users').select('role').eq('auth_id', adminUser.id).single();
     if (adminProfile?.role !== 'ADMIN') return { success: false, message: "Permissão de administrador necessária." };
 
     const userId = formData.get('userId') as string;
