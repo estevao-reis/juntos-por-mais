@@ -1,6 +1,6 @@
 -- Supabase Schema Setup (Versão Final, Robusta e Re-executável)
 
--- Bloco de Limpeza (DROP)
+-- Bloco de Limpeza (DROP): Garante que o script pode ser executado novamente sem erros.
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 DROP FUNCTION IF EXISTS public.get_my_role();
 DROP FUNCTION IF EXISTS public.handle_new_user();
@@ -20,6 +20,7 @@ CREATE TABLE public."AdministrativeRegions" (
   name text NOT NULL UNIQUE
 );
 
+-- Populando com as 35 RAs do DF
 INSERT INTO public."AdministrativeRegions" (name) VALUES
 ('Plano Piloto'), ('Gama'), ('Taguatinga'), ('Brazlândia'), ('Sobradinho'), ('Planaltina'), ('Paranoá'), ('Núcleo Bandeireante'), ('Ceilândia'), ('Guará'), ('Cruzeiro'), ('Samambaia'), ('Santa Maria'), ('São Sebastião'), ('Recanto das Emas'), ('Lago Sul'), ('Riacho Fundo'), ('Lago Norte'), ('Candangolândia'), ('Águas Claras'), ('Riacho Fundo II'), ('Sudoeste/Octogonal'), ('Varjão'), ('Park Way'), ('SCIA'), ('Sobradinho II'), ('Jardim Botânico'), ('Itapoã'), ('SIA'), ('Vicente Pires'), ('Fercal'), ('Sol Nascente/Pôr do Sol'), ('Arniqueira'), ('Arapoanga'), ('Água Quente');
 
@@ -34,7 +35,6 @@ CREATE TABLE public."Users" (
   profile_picture_url text,
   birth_date date,
   occupation text,
-  interests text[],
   role public.user_role, 
   leader_id uuid REFERENCES public."Users"(id) ON DELETE SET NULL,
   cpf text UNIQUE,
@@ -50,13 +50,11 @@ CREATE TABLE public."Announcements" (
 );
 
 -- 2. Funções e Triggers
-
--- **NOVA FUNÇÃO HELPER DE SEGURANÇA**
--- Esta função busca a role do usuário atual de forma segura, sem causar recursão.
 CREATE OR REPLACE FUNCTION public.get_my_role()
 RETURNS public.user_role
-LANGUAGE sql STABLE SECURITY DEFINER
-AS $$  SELECT "role" FROM public."Users" WHERE auth_id = auth.uid()$$;
+LANGUAGE sql STABLE SECURITY DEFINER AS $$
+  SELECT "role" FROM public."Users" WHERE auth_id = auth.uid()
+$$;
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
@@ -75,7 +73,8 @@ $$;
 CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 CREATE OR REPLACE FUNCTION public.get_leader_partner_counts()
-RETURNS TABLE (leader_id uuid, leader_name text, partner_count bigint) AS $$
+RETURNS TABLE (leader_id uuid, leader_name text, partner_count bigint)
+LANGUAGE plpgsql SECURITY DEFINER AS $$
 BEGIN
   RETURN QUERY
   SELECT l.id, l.name, count(p.id)
@@ -84,7 +83,7 @@ BEGIN
   WHERE l.role = 'LEADER'
   GROUP BY l.id, l.name ORDER BY partner_count DESC, leader_name ASC;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- 3. Storage
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -97,21 +96,21 @@ ALTER TABLE public."Announcements" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public."AdministrativeRegions" ENABLE ROW LEVEL SECURITY;
 
 -- POLÍTICAS PARA "Users"
+DROP POLICY IF EXISTS "Acesso total para Admins" ON public."Users";
+CREATE POLICY "Acesso total para Admins" ON public."Users" FOR ALL USING (public.get_my_role() = 'ADMIN');
+
+DROP POLICY IF EXISTS "Usuários podem ver e editar seu próprio perfil" ON public."Users";
+CREATE POLICY "Usuários podem ver e editar seu próprio perfil" ON public."Users" FOR ALL USING (auth_id = auth.uid());
+
 DROP POLICY IF EXISTS "Leitura pública de nomes de líderes" ON public."Users";
 CREATE POLICY "Leitura pública de nomes de líderes" ON public."Users" FOR SELECT USING (role = 'LEADER');
 
-DROP POLICY IF EXISTS "Usuários podem ver e editar seu próprio perfil" ON public."Users";
-CREATE POLICY "Usuários podem ver e editar seu próprio perfil" ON public."Users" FOR ALL USING ( auth_id = auth.uid() );
-
-DROP POLICY IF EXISTS "Admins podem gerenciar todos os perfis" ON public."Users";
-CREATE POLICY "Admins podem gerenciar todos os perfis" ON public."Users" FOR ALL USING ( public.get_my_role() = 'ADMIN' );
-
 -- POLÍTICAS PARA "Announcements"
-DROP POLICY IF EXISTS "Líderes e Admins podem ver os avisos" ON public."Announcements";
-CREATE POLICY "Líderes e Admins podem ver os avisos" ON public."Announcements" FOR SELECT USING ( auth.role() = 'authenticated' );
+DROP POLICY IF EXISTS "Admins podem gerenciar avisos" ON public."Announcements";
+CREATE POLICY "Admins podem gerenciar avisos" ON public."Announcements" FOR ALL USING (public.get_my_role() = 'ADMIN');
 
-DROP POLICY IF EXISTS "Admins podem gerenciar todos os avisos" ON public."Announcements";
-CREATE POLICY "Admins podem gerenciar todos os avisos" ON public."Announcements" FOR ALL USING ( public.get_my_role() = 'ADMIN' );
+DROP POLICY IF EXISTS "Usuários logados podem ver avisos" ON public."Announcements";
+CREATE POLICY "Usuários logados podem ver avisos" ON public."Announcements" FOR SELECT USING (auth.role() = 'authenticated');
 
 -- POLÍTICAS PARA "AdministrativeRegions"
 DROP POLICY IF EXISTS "Leitura pública das RAs" ON public."AdministrativeRegions";

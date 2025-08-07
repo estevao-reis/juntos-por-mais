@@ -14,6 +14,18 @@ export default async function PainelPage() {
     redirect('/login');
   }
 
+  const { data: profile } = await supabase
+    .from('Users')
+    .select('id, role')
+    .eq('auth_id', user.id)
+    .single();
+
+  if (!profile) {
+    return redirect('/login');
+  }
+
+  const leaderIdForLink = profile.role === 'LEADER' ? profile.id : undefined;
+
   const [announcementsRes, supportersRes] = await Promise.all([
     supabase.from('Announcements').select('*').order('created_at', { ascending: false }),
     getReferredSupporters()
@@ -37,9 +49,9 @@ export default async function PainelPage() {
       </header>
 
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-
         <div className="lg:col-span-2">
-            <SupportersList supporters={supporters} />
+            {/* 3. PASSAR A VARIÁVEL CONDICIONAL PARA O COMPONENTE */}
+            <SupportersList supporters={supporters} userId={leaderIdForLink} />
         </div>
 
         <div className="lg:col-span-1">

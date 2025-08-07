@@ -237,11 +237,23 @@ export async function sendAnnouncement(
   if (!user) {
     return { success: false, message: "Usuário não autenticado." };
   }
+
+  const { data: profile, error: profileError } = await supabase
+    .from('Users')
+    .select('id')
+    .eq('auth_id', user.id)
+    .single();
+
+  if (profileError || !profile) {
+    return { success: false, message: "Não foi possível encontrar o perfil do administrador." };
+  }
+
   const announcementData = {
     content,
-    author_id: user.id,
+    author_id: profile.id,
     target_audience: "ALL_LEADERS",
   };
+  
   const { error } = await supabase
     .from("Announcements")
     .insert(announcementData);

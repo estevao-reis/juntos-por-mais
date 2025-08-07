@@ -38,6 +38,10 @@ const adminLinks = [
 export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
   const pathname = usePathname();
 
+  const visibleLeaderLinks = isAdmin
+    ? leaderLinks.filter(link => link.href !== '/painel')
+    : leaderLinks;
+
   const NavLink = ({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) => (
     <Link href={href} onClick={onClose} className={cn(
       "flex items-center gap-4 p-3 rounded-lg text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
@@ -74,7 +78,7 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
           <div>
             <h3 className="mb-2 px-3 text-xs font-semibold uppercase text-muted-foreground/80">Painel</h3>
             <div className="flex flex-col gap-1">
-              {leaderLinks.map(link => <NavLink key={link.href} href={link.href} label={link.title} icon={link.icon} />)}
+              {visibleLeaderLinks.map(link => <NavLink key={link.href} href={link.href} label={link.title} icon={link.icon} />)}
             </div>
           </div>
         )}

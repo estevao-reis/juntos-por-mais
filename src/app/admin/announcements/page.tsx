@@ -11,7 +11,7 @@ export default async function AnnouncementsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const { data: profile } = await supabase.from('Users').select('role').eq('id', user.id).single();
+  const { data: profile } = await supabase.from('Users').select('role').eq('auth_id', user.id).single();
   if (profile?.role !== 'ADMIN') redirect('/painel');
 
   const { data: announcements } = await supabase.from('Announcements').select('*').order('created_at', { ascending: false });

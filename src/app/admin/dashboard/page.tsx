@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
   const { data: profile, error: profileError } = await supabase
     .from('Users')
     .select('role')
-    .eq('id', user.id)
+    .eq('auth_id', user.id)
     .single();
   
   if (profileError || profile?.role !== 'ADMIN') {

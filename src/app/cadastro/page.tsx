@@ -51,9 +51,9 @@ export default function CadastroPage() {
     <section id="cadastro" className="py-12 bg-muted/40 min-h-screen flex items-center">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">Torne-se um Apoiador</h1>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tighter">Junte-se a Nós como <strong>Apoiador</strong></h1>
           <p className="mt-4 max-w-xl mx-auto text-muted-foreground">
-            Preencha o formulário abaixo para se juntar à nossa rede exclusiva de apoiadores.
+            Preencha o formulário abaixo para se juntar à nossa rede exclusiva de <strong>apoiadores</strong>.
           </p>
         </div>
         {loading ? (

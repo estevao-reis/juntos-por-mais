@@ -59,7 +59,8 @@ function RoleSwitcher({
         alert(result.message);
       } else {
         alert(`Erro: ${result.message}`);
-    } }
+      }
+    }
     setIsLoading(false);
   };
 
@@ -108,8 +109,10 @@ export function UsersTable({ users }: UsersTableProps) {
             <TableRow>
               <TableHead>Nome</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Região</TableHead>
-              <TableHead>Data de Cadastro</TableHead>
+              {/* Coluna Região oculta em telas pequenas (mobile) */}
+              <TableHead className="hidden md:table-cell">Região</TableHead>
+              {/* Coluna Data de Cadastro oculta em telas pequenas e médias */}
+              <TableHead className="hidden lg:table-cell">Data de Cadastro</TableHead>
               <TableHead>Função</TableHead>
               <TableHead className="text-right">Ações</TableHead>
             </TableRow>
@@ -119,8 +122,10 @@ export function UsersTable({ users }: UsersTableProps) {
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.region_name || "N/A"}</TableCell>
-                <TableCell>
+                {/* Célula Região oculta em telas pequenas (mobile) */}
+                <TableCell className="hidden md:table-cell">{user.region_name || "N/A"}</TableCell>
+                {/* Célula Data de Cadastro oculta em telas pequenas e médias */}
+                <TableCell className="hidden lg:table-cell">
                   {new Date(user.created_at).toLocaleDateString("pt-BR")}
                 </TableCell>
                 <TableCell>

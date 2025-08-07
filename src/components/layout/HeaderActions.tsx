@@ -35,6 +35,10 @@ interface HeaderActionsProps {
 
 export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const visibleLeaderLinks = isAdmin
+    ? leaderLinks.filter(link => link.href !== '/painel')
+    : leaderLinks;
   
   return (
     <>
@@ -43,22 +47,24 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
           <>
             <NavigationMenu>
               <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>Painel</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[200px] gap-1 p-2">
-                      {leaderLinks.map(link => (
-                        <li key={link.href}>
-                          <NavigationMenuLink asChild>
-                            <Link href={link.href} className="flex h-full w-full select-none flex-col justify-end rounded-md bg-transparent p-3 no-underline outline-none hover:bg-accent focus:shadow-md">
-                              {link.title}
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
+                {visibleLeaderLinks.length > 0 && (
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>Painel</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <ul className="grid w-[200px] gap-1 p-2">
+                        {visibleLeaderLinks.map(link => (
+                          <li key={link.href}>
+                            <NavigationMenuLink asChild>
+                              <Link href={link.href} className="flex h-full w-full select-none flex-col justify-end rounded-md bg-transparent p-3 no-underline outline-none hover:bg-accent focus:shadow-md">
+                                {link.title}
+                              </Link>
+                            </NavigationMenuLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                )}
                 {isAdmin && (
                   <NavigationMenuItem>
                     <NavigationMenuTrigger>Administrador</NavigationMenuTrigger>
