@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Juntos com Estêvão Reis",
+  title: "Juntos com Estevão Reis",
   description: "Plataforma de parceiros.",
   icons: {
     icon: '/logo.png',

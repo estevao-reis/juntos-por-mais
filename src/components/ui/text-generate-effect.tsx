@@ -21,10 +21,9 @@ export const TextGenerateEffect = ({
         opacity: 1,
       },
       {
-        duration: 2,
-        delay: stagger(0.2),
-      }
-    );
+        duration: 1,
+        delay: stagger(0.1),
+    } );
   }, [scope, animate]);
 
   const renderWords = () => {
@@ -33,23 +32,18 @@ export const TextGenerateEffect = ({
         {wordsArray.map((word, idx) => (
           <motion.span
             key={word + idx}
-            // A cor agora é herdada do className, e a opacidade inicial é 0
             className="opacity-0"
           >
             {word}{" "}
           </motion.span>
         ))}
       </motion.div>
-    );
-  };
+  ); };
 
   return (
-    // CORREÇÃO: As classes de estilo (incluindo tamanho e cor) agora são aplicadas diretamente
-    // no contêiner do texto, removendo o div interno que tinha o tamanho fixo.
     <div className={cn(className)}>
       <div className="mt-4">
         {renderWords()}
       </div>
     </div>
-  );
-};
+); };
