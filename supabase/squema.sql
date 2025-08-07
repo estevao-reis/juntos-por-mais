@@ -164,3 +164,28 @@ TO authenticated USING ( (bucket_id = 'avatars') AND (auth.uid() = owner) );
 CREATE POLICY "User can delete their own avatar."
 ON storage.objects FOR DELETE
 TO authenticated USING ( (bucket_id = 'avatars') AND (auth.uid() = owner) );
+
+
+
+
+
+ALTER TABLE public."Users" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public."Announcements" ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins podem gerenciar todos os perfis" ON public."Users" FOR ALL
+  USING ( (SELECT role FROM public."Users" WHERE auth_id = auth.uid()) = 'ADMIN' );
+
+CREATE POLICY "Usuários podem visualizar seu próprio perfil" ON public."Users" FOR SELECT
+  USING ( auth_id = auth.uid() );
+
+CREATE POLICY "Usuários podem atualizar seu próprio perfil" ON public."Users" FOR UPDATE
+  USING ( auth_id = auth.uid() );
+
+CREATE POLICY "Usuários autenticados podem ver líderes e RAs" ON public."Users" FOR SELECT
+  USING ( role = 'LEADER' OR role = 'SUPPORTER' );
+
+CREATE POLICY "Admins podem gerenciar todos os avisos" ON public."Announcements" FOR ALL
+  USING ( (SELECT role FROM public."Users" WHERE auth_id = auth.uid()) = 'ADMIN' );
+
+CREATE POLICY "Usuários autenticados podem ver os avisos" ON public."Announcements" FOR SELECT
+  USING ( auth.role() = 'authenticated' );

@@ -23,32 +23,33 @@ export const TextGenerateEffect = ({
       {
         duration: 2,
         delay: stagger(0.2),
-    } );
+      }
+    );
   }, [scope, animate]);
 
   const renderWords = () => {
     return (
       <motion.div ref={scope}>
-        {wordsArray.map((word, idx) => {
-          return (
-            <motion.span
-              key={word + idx}
-              className="dark:text-white text-black opacity-0"
-            >
-              {word}{" "}
-            </motion.span>
-          );
-        })}
+        {wordsArray.map((word, idx) => (
+          <motion.span
+            key={word + idx}
+            // A cor agora é herdada do className, e a opacidade inicial é 0
+            className="opacity-0"
+          >
+            {word}{" "}
+          </motion.span>
+        ))}
       </motion.div>
     );
   };
 
   return (
-    <div className={cn("font-bold", className)}>
+    // CORREÇÃO: As classes de estilo (incluindo tamanho e cor) agora são aplicadas diretamente
+    // no contêiner do texto, removendo o div interno que tinha o tamanho fixo.
+    <div className={cn(className)}>
       <div className="mt-4">
-        <div className="dark:text-white text-black text-2xl leading-snug tracking-wide">
-          {renderWords()}
-        </div>
+        {renderWords()}
       </div>
     </div>
-); };
+  );
+};
