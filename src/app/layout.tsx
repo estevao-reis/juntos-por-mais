@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   title: "Juntos com Estevão Reis",
   description: "Plataforma de parceiros.",
   icons: {
-    icon: '/logo.png',
+    icon: '/estevao-reis-perfil-rounded.png',
   },
 };
 

@@ -20,7 +20,7 @@ export default async function HomePage() {
   return (
     <>
       <HeroSection />
-      <AboutSection />
       <CTASection leaders={leaders} regions={regions} />
+      <AboutSection />
     </>
 ); }

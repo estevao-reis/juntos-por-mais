@@ -24,14 +24,14 @@ export function Header({ user, isAdmin, profilePictureUrl }: HeaderProps) {
               />
             ) : (
               <Image 
-                src="/logo.png"
+                src="/estevao-reis-perfil.jpg"
                 alt="Juntos por Mais Logo"
                 width={32}
                 height={32}
               />
             )}
           </div>
-          <span>Início</span>
+          <span>Explorar</span>
         </Link>
 
         <HeaderActions user={user} isAdmin={isAdmin} />

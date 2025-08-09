@@ -6,12 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const stats = [
-  { value: "+15", label: "Anos de Vida Pública" },
-  { value: "+1.000", label: "Vidas Impactadas" },
-  { value: "35", label: "Regiões do DF Alcançadas" },
-];
-
 const bio = {
   title: "Quem é Estevão Reis?",
   paragraphs: [
@@ -26,60 +20,35 @@ export function AboutSection() {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <section className="py-20 bg-muted/40">
+    <section id="sobre" className="py-20 bg-muted/40 scroll-mt-16">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-3 gap-12 items-center max-w-6xl mx-auto">
-          
-          <div className="lg:col-span-1 flex flex-col items-center gap-8">
-            <div className="relative h-48 w-48 rounded-full overflow-hidden bg-background shadow-lg">
-              <Image 
-                src="/estevao-reis-perfil.jpg"
-                alt="Foto de Estevão Reis"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="grid grid-cols-3 lg:grid-cols-1 gap-4 text-center w-full">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <h3 className="text-3xl font-bold text-primary tracking-tighter">{stat.value}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
-                </div>
-              ))}
-            </div>
+        <div className="max-w-3xl mx-auto bg-background p-8 md:p-12 rounded-2xl shadow-lg">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-8 text-center">
+            {bio.title}
+          </h2>
+
+          <div 
+            className={cn(
+              "relative text-lg text-foreground/80 leading-relaxed space-y-6 text-center transition-[max-height] duration-700 ease-in-out overflow-hidden",
+              !isExpanded && "max-h-80 [mask-image:linear-gradient(to_bottom,black_70%,transparent_100%)]"
+            )}
+            style={{ maxHeight: isExpanded ? '1200px' : '320px' }}
+          >
+            {bio.paragraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
           </div>
-
-          <div className="lg:col-span-2">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tighter mb-6 text-center lg:text-left">
-              {bio.title}
-            </h2>
-
-            <div 
-              className={cn(
-                "relative text-lg text-foreground/80 leading-relaxed text-center lg:text-left transition-[max-height] duration-700 ease-in-out",
-                !isExpanded && "[mask-image:linear-gradient(to_bottom,black_60%,transparent_100%)]"
-              )}
-              style={{ maxHeight: isExpanded ? '1200px' : '320px' }}
-            >
-              <div className="space-y-6">
-                {bio.paragraphs.map((paragraph, index) => (
-                    <p key={index}>{paragraph}</p>
-                ))}
-              </div>
-            </div>
             
-            <div className="text-center lg:text-left">
-                <Button 
-                variant="ghost" 
-                onClick={() => setIsExpanded(!isExpanded)} 
-                className="mt-6 text-primary hover:text-primary px-0"
-                >
-                {isExpanded ? 'Ler Menos' : 'Continue Lendo'}
-                <ChevronDown className={cn("ml-2 size-5 transition-transform duration-300", { "rotate-180": isExpanded })} />
-                </Button>
-            </div>
+          <div className="text-center">
+            <Button 
+              variant="ghost" 
+              onClick={() => setIsExpanded(!isExpanded)} 
+              className="mt-8 text-primary hover:text-primary"
+              >
+              {isExpanded ? 'Ler Menos' : 'Continue Lendo'}
+              <ChevronDown className={cn("ml-2 size-5 transition-transform duration-300", { "rotate-180": isExpanded })} />
+            </Button>
           </div>
-
         </div>
       </div>
     </section>

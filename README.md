@@ -1,5 +1,3 @@
-# Plataforma de Gerenciamento de Apoiadores e Líderes
-
 Uma aplicação full-stack construída com Next.js e Supabase que permite a gestão de uma rede de apoiadores e líderes, com múltiplos níveis de acesso, painéis de controle e funcionalidades de gerenciamento completas.
 
 ## Arquitetura e Funcionalidades
