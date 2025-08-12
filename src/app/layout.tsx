@@ -21,8 +21,7 @@ export const metadata: Metadata = {
   description: "Plataforma de parceiros.",
   icons: {
     icon: '/estevao-reis-perfil-rounded.png',
-  },
-};
+}, };
 
 export default async function RootLayout({
   children,

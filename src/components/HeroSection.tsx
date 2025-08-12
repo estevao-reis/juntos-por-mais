@@ -41,7 +41,7 @@ export function HeroSection() {
           
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
             <span className="mb-4 text-sm font-bold uppercase tracking-widest text-slate-300">
-              Movimento Juntos por Mais
+              Juntos por Mais
             </span>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
