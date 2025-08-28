@@ -19,7 +19,9 @@ const geistMono = Geist_Mono({
 const siteUrl = 'https://juntos-por-mais.vercel.app';
 
 export const metadata: Metadata = {
-title: "Juntos com Estevão Reis",
+  metadataBase: new URL(siteUrl),
+
+  title: "Juntos com Estevão Reis",
   description: "Plataforma de parceiros",
   icons: {
     icon: '/estevao-reis-perfil2-rounded.png',
@@ -29,7 +31,7 @@ title: "Juntos com Estevão Reis",
     description: "Plataforma de parceiros",
     images: [
       {
-        url: `${siteUrl}/estevao-reis-perfil2-rounded.png`, 
+        url: `/estevao-reis-perfil2-rounded.png`, 
         width: 1200,
         height: 630,
         alt: 'Estevão Reis',
