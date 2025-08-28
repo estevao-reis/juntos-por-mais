@@ -17,10 +17,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Juntos com Estevão Reis",
+title: "Juntos com Estevão Reis",
   description: "Plataforma de parceiros.",
   icons: {
     icon: '/estevao-reis-perfil-rounded.png',
+  },
+  openGraph: {
+    title: "Juntos com Estevão Reis",
+    description: "Plataforma de parceiros.",
+    images: [
+      {
+        url: '/estevao-reis-perfil2-rounded.png',
+        width: 1200,
+        height: 630,
+        alt: 'Estevão Reis',
+    }, ],
+    locale: 'pt_BR',
+    type: 'website',
 }, };
 
 export default async function RootLayout({

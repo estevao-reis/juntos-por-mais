@@ -45,7 +45,7 @@ export function HeroSection() {
             </span>
             
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-              Unindo Forças por um <span className="text-yellow-400">Distrito Federal</span> mais Justo, com Estevão Reis.
+              Unindo Forças por um <span className="text-blue-400">Distrito Federal</span> mais Justo, com Estevão Reis.
             </h1>
 
             <p className="mt-6 text-lg text-slate-300 max-w-xl">
@@ -85,7 +85,7 @@ export function HeroSection() {
           <div className="hidden md:flex flex-col items-center justify-center gap-10">
              <div className="relative h-72 w-72 lg:h-80 lg:w-80 rounded-full overflow-hidden shadow-2xl border-4 border-yellow-400/20">
                <Image
-                 src="/estevao-reis-perfil.jpg"
+                 src="/estevao-reis-perfil2-rounded.png"
                  alt="Foto de Estevão Reis"
                  fill
                  className="object-cover"
@@ -115,7 +115,7 @@ export function HeroSection() {
         <div className="md:hidden flex flex-col items-center gap-10 mt-16 w-full">
           <div className="relative h-48 w-48 rounded-full overflow-hidden shadow-lg border-4 border-primary/20">
                           <Image
-                              src="/estevao-reis-perfil.jpg"
+                              src="/estevao-reis-perfil2-rounded.png"
                               alt="Foto de Estevão Reis"
                               fill
                               className="object-cover"
