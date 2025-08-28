@@ -26,7 +26,7 @@ title: "Juntos com Estevão Reis",
   },
   openGraph: {
     title: "Juntos com Estevão Reis",
-    description: "Plataforma de parceiros.",
+    description: "Plataforma de parceiros",
     images: [
       {
         url: `${siteUrl}/estevao-reis-perfil2-rounded.png`, 
