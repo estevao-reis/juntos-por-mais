@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   title: "Juntos com Estevão Reis",
   description: "Plataforma de parceiros",
   icons: {
-    icon: '/estevao-reis-perfil2-rounded.png',
+    icon: '/estevao-reis-perfil2-rounded-200kb.png',
   },
   openGraph: {
     title: "Juntos com Estevão Reis",
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
     siteName: "Juntos com Estevão Reis",
     images: [
       {
-        url: `${siteUrl}/estevao-reis-perfil2-rounded.png`,
-        secureUrl: `${siteUrl}/estevao-reis-perfil2-rounded.png`,
+        url: `${siteUrl}/estevao-reis-perfil2-rounded-200kb.png`,
+        secureUrl: `${siteUrl}/estevao-reis-perfil2-rounded-200kb.png`,
         type: 'image/png',
         width: 1200,
         height: 630,
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Juntos com Estevão Reis",
     description: "Plataforma de parceiros",
-    images: [`${siteUrl}/estevao-reis-perfil2-rounded.png`], 
+    images: [`${siteUrl}/estevao-reis-perfil2-rounded-200kb.png`], 
 }, };
 
 export default async function RootLayout({
