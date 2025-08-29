@@ -1,7 +1,6 @@
 import { AnnouncementForm } from "@/components/AnnouncementForm";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { AnnouncementCard } from "@/components/AnnouncementCard";
 
 export default async function AnnouncementsPage() {

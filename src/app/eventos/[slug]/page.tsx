@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import { EventRegistrationForm } from "@/components/EventRegistrationForm";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 
 export default async function EventPage({ params }: { params: { slug: string } }) {
   const supabase = await createClient();
