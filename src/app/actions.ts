@@ -191,9 +191,9 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
 
 
 export async function signIn(
-  previousState: any,
+  previousState: ActionResult | null,
   formData: FormData
-): Promise<{ success: boolean; message: string }> {
+): Promise<ActionResult> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const supabase = await createClient();
