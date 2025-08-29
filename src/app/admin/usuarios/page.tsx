@@ -26,7 +26,7 @@ export default async function ManageUsersPage() {
         <div>
           <h1 className="text-3xl font-bold">Gerenciamento de Usuários</h1>
           <p className="text-muted-foreground mt-2">
-            Promova líderes a administradores ou gerencie perfis.
+            Promova líderes a administradores ou gerencie perfis. Lembre-se que certas ações não podem ser desfeitas.
           </p>
         </div>
       </div>
