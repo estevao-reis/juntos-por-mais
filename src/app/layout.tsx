@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description: "Plataforma de parceiros",
     images: [
       {
-        url: `https://juntos-por-mais.vercel.app/estevao-reis-perfil2-rounded.png`, 
+        url: `${siteUrl}/estevao-reis-perfil2-rounded.png`, 
         width: 1200,
         height: 630,
         alt: 'Estevão Reis',
