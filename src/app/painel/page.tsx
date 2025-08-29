@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { getReferredSupporters } from "../actions";
 import { SupportersList } from "@/components/SupportersList";
+import { UpcomingEventsList } from "@/components/UpcomingEventsList";
 
 export default async function PainelPage() {
   const supabase = await createClient();
@@ -23,16 +24,18 @@ export default async function PainelPage() {
   if (!profile) {
     return redirect('/login');
   }
+  
+  const isLeader = profile.role === 'LEADER';
 
-  const leaderIdForLink = profile.role === 'LEADER' ? profile.id : undefined;
-
-  const [announcementsRes, supportersRes] = await Promise.all([
+  const [announcementsRes, supportersRes, eventsRes] = await Promise.all([
     supabase.from('Announcements').select('*').order('created_at', { ascending: false }),
-    getReferredSupporters()
+    getReferredSupporters(),
+    supabase.from('Events').select('id, name, slug, event_date').order('event_date', { ascending: true })
   ]);
 
   const announcements = announcementsRes.data || [];
   const supporters = supportersRes;
+  const events = eventsRes.data || [];
 
   return (
     <div className="container mx-auto p-8">
@@ -49,9 +52,9 @@ export default async function PainelPage() {
       </header>
 
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        <div className="lg:col-span-2">
-            {/* 3. PASSAR A VARIÁVEL CONDICIONAL PARA O COMPONENTE */}
-            <SupportersList supporters={supporters} userId={leaderIdForLink} />
+        <div className="lg:col-span-2 grid gap-8">
+            {isLeader && <UpcomingEventsList events={events} leaderId={profile.id} />}
+            <SupportersList supporters={supporters} userId={isLeader ? profile.id : undefined} />
         </div>
 
         <div className="lg:col-span-1">

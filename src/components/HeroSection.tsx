@@ -31,6 +31,8 @@ export function HeroSection() {
           src="/estevao-reis-perfil.jpg"
           alt="Background"
           fill
+          priority
+          sizes="100vw"
           className="object-cover object-center opacity-20"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/80 to-slate-900/50" />
@@ -81,15 +83,15 @@ export function HeroSection() {
             </div>
           </div>
 
-          {/* Coluna da Imagem e Stats (Direita - APENAS DESKTOP) */}
           <div className="hidden md:flex flex-col items-center justify-center gap-10">
              <div className="relative h-72 w-72 lg:h-80 lg:w-80 rounded-full overflow-hidden shadow-2xl border-4 border-yellow-400/20">
                <Image
                  src="/estevao-reis-perfil2-rounded.png"
                  alt="Foto de Estevão Reis"
                  fill
-                 className="object-cover"
                  priority
+                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                 className="object-cover"
                />
              </div>
              
@@ -111,17 +113,17 @@ export function HeroSection() {
           </div>
         </div>
         
-        {/* Stats e Botão "Conheça" (APENAS MOBILE) */}
         <div className="md:hidden flex flex-col items-center gap-10 mt-16 w-full">
           <div className="relative h-48 w-48 rounded-full overflow-hidden shadow-lg border-4 border-primary/20">
-                          <Image
-                              src="/estevao-reis-perfil2-rounded.png"
-                              alt="Foto de Estevão Reis"
-                              fill
-                              className="object-cover"
-                              priority
-                          />
-                        </div>
+              <Image
+                  src="/estevao-reis-perfil2-rounded.png"
+                  alt="Foto de Estevão Reis"
+                  fill
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover"
+              />
+            </div>
             <div className="grid grid-cols-3 gap-4 text-center w-full max-w-sm">
                 {stats.map((stat) => (
                 <div key={stat.label}>

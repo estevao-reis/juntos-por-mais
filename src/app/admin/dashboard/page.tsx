@@ -11,7 +11,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
+import { Users, CalendarPlus } from "lucide-react";
 
 interface LeaderStats {
   leader_id: string;
@@ -47,9 +47,15 @@ export default async function AdminDashboardPage() {
     <div className="container mx-auto p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Dashboard do Administrador</h1>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+            <Link href="/admin/events">
+              <Button>
+                <CalendarPlus className="mr-2 h-4 w-4" />
+                Gerenciar Eventos
+              </Button>
+            </Link>
             <Link href="/admin/announcements">
-              <Button>Gerenciar Avisos</Button>
+              <Button variant="outline">Gerenciar Avisos</Button>
             </Link>
             <Link href="/admin/usuarios">
               <Button variant="outline">
