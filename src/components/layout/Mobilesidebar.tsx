@@ -58,7 +58,7 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
       <div className="p-6 border-b">
         <Link href="/" onClick={onClose} className="flex items-center gap-3 text-lg font-semibold text-foreground">
           <Image
-            src="/logo.png"
+            src="/estevao-reis-perfil2-rounded.png"
             alt="Juntos por Mais Logo"
             width={32}
             height={32}

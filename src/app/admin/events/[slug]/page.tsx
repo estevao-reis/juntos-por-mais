@@ -1,7 +1,137 @@
-/*
-  Página temporariamente desabilitada para garantir o build.
-  A funcionalidade será restaurada na Fase 2.
-*/
-export default function Page() {
-    return null;
-}
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Calendar, UserCheck } from "lucide-react";
+
+type EventDetails = {
+  id: string;
+  name: string;
+  event_date: string;
+};
+
+type Registrant = {
+  supporter_name: string;
+  supporter_region: string;
+  leader_name: string;
+};
+
+export default function AdminEventDetailsPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+
+  const [event, setEvent] = useState<EventDetails | null>(null);
+  const [registrants, setRegistrants] = useState<Registrant[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!slug) return;
+
+    const supabase = createClient();
+
+    async function fetchData() {
+      setLoading(true);
+      setError(null);
+
+      const { data: eventData, error: eventError } = await supabase
+        .from('Events')
+        .select('id, name, event_date')
+        .eq('slug', slug)
+        .single();
+
+      if (eventError || !eventData) {
+        setError("Evento não encontrado.");
+        setLoading(false);
+        return;
+      }
+      setEvent(eventData);
+
+      const { data: registrantsData, error: registrantsError } = await supabase.rpc(
+        'get_event_registrants_with_details',
+        { p_event_slug: slug }
+      );
+
+      if (registrantsError) {
+        setError("Erro ao buscar inscritos.");
+        console.error("Erro RPC:", registrantsError);
+      } else {
+        setRegistrants(registrantsData || []);
+      }
+
+      setLoading(false);
+    }
+
+    fetchData();
+  }, [slug]);
+
+  if (loading) {
+    return <div className="container mx-auto p-8 text-center">Carregando detalhes do evento...</div>;
+  }
+
+  if (error) {
+    return <div className="container mx-auto p-8 text-center text-destructive">{error}</div>;
+  }
+
+  if (!event) {
+    return <div className="container mx-auto p-8 text-center">Evento não encontrado.</div>;
+  }
+
+  return (
+    <div className="container mx-auto p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">{event.name}</h1>
+        <p className="text-muted-foreground mt-2 flex items-center gap-2">
+          <Calendar className="h-4 w-4" />
+          {new Date(event.event_date).toLocaleDateString('pt-BR', {
+            weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
+          })}
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <UserCheck className="h-5 w-5" />
+            Lista de Inscritos
+          </CardTitle>
+          <CardDescription>
+            Total de {registrants.length} participantes confirmados.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-lg border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nome do Apoiador</TableHead>
+                  <TableHead>Região</TableHead>
+                  <TableHead>Indicado Por</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {registrants.length > 0 ? (
+                  registrants.map((reg, index) => (
+                    <TableRow key={index}>
+                      <TableCell className="font-medium">{reg.supporter_name}</TableCell>
+                      <TableCell>{reg.supporter_region || 'N/A'}</TableCell>
+                      <TableCell>{reg.leader_name || 'Inscrição Direta'}</TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={3} className="h-24 text-center">
+                      Nenhum inscrito até o momento.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+); }
