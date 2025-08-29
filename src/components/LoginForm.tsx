@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { signIn } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function LoginForm() {
+  const router = useRouter(); // Inicializar o router
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -19,12 +21,12 @@ export function LoginForm() {
     const formData = new FormData(event.currentTarget);
     const result = await signIn(formData);
 
-    if (result && !result.success) {
+    if (result.success && result.redirectTo) {
+      router.push(result.redirectTo);
+    } else {
       setError(result.message);
-    }
-    
-    setPending(false);
-  };
+      setPending(false);
+  } };
 
   return (
     <Card className="w-full max-w-sm">
