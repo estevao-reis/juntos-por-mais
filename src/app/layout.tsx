@@ -20,7 +20,6 @@ const siteUrl = 'https://juntos-por-mais.vercel.app';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-
   title: "Juntos com Estevão Reis",
   description: "Plataforma de parceiros",
   icons: {
@@ -29,16 +28,22 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Juntos com Estevão Reis",
     description: "Plataforma de parceiros",
+    url: siteUrl,
     images: [
       {
-        url: `${siteUrl}/estevao-reis-perfil2-rounded.png`, 
+        url: `${siteUrl}/estevao-reis-perfil2-rounded.png`,
         width: 1200,
         height: 630,
-        alt: 'Estevão Reis',
+        alt: "Estevão Reis",
     }, ],
-    locale: 'pt_BR',
-    type: 'website',
-    url: siteUrl,
+    locale: "pt_BR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Juntos com Estevão Reis",
+    description: "Plataforma de parceiros",
+    images: [`${siteUrl}/estevao-reis-perfil2-rounded.png`],
 }, };
 
 export default async function RootLayout({
