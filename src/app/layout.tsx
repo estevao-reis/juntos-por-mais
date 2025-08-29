@@ -29,12 +29,15 @@ export const metadata: Metadata = {
     title: "Juntos com Estevão Reis",
     description: "Plataforma de parceiros",
     url: siteUrl,
+    siteName: "Juntos com Estevão Reis",
     images: [
       {
         url: `${siteUrl}/estevao-reis-perfil2-rounded.png`,
+        secureUrl: `${siteUrl}/estevao-reis-perfil2-rounded.png`,
+        type: 'image/png',
         width: 1200,
         height: 630,
-        alt: "Estevão Reis",
+        alt: "Estevão Reis - Juntos por Mais",
     }, ],
     locale: "pt_BR",
     type: "website",
@@ -43,7 +46,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Juntos com Estevão Reis",
     description: "Plataforma de parceiros",
-    images: [`${siteUrl}/estevao-reis-perfil2-rounded.png`],
+    images: [`${siteUrl}/estevao-reis-perfil2-rounded.png`], 
 }, };
 
 export default async function RootLayout({
@@ -63,7 +66,7 @@ export default async function RootLayout({
       .select('role, profile_picture_url')
       .eq('auth_id', user.id)
       .single();
-    
+
     if (profile) {
       isAdmin = profile.role === 'ADMIN';
       profilePictureUrl = profile.profile_picture_url;
