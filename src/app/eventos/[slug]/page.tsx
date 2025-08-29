@@ -42,7 +42,7 @@ export default async function EventPage({ params }: { params: { slug: string } }
           </header>
 
           {event.description && (
-            <div className="prose dark:prose-invert max-w-none mb-10">
+            <div className="prose dark:prose-invert max-w-none mb-10 text-center mx-auto">
               <p>{event.description}</p>
             </div>
           )}

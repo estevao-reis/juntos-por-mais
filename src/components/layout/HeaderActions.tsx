@@ -11,7 +11,7 @@ import {
   NavigationMenuTrigger,
   NavigationMenuContent
 } from '@/components/ui/navigation-menu';
-import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet'; 
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
 import { signOut } from '@/app/actions';
 import { MobileSidebar } from './Mobilesidebar';
@@ -25,6 +25,7 @@ const leaderLinks = [
 const adminLinks = [
   { href: '/admin/dashboard', title: 'Dashboard Geral' },
   { href: '/admin/announcements', title: 'Gerenciar Avisos' },
+  { href: '/admin/events', title: 'Gerenciar Eventos' },
   { href: '/admin/usuarios', title: 'Gerenciar Usuários' },
 ];
 
@@ -39,7 +40,7 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
   const visibleLeaderLinks = isAdmin
     ? leaderLinks.filter(link => link.href !== '/painel')
     : leaderLinks;
-  
+
   return (
     <>
       <nav className="hidden md:flex items-center gap-4">
@@ -108,7 +109,7 @@ export function HeaderActions({ user, isAdmin }: HeaderActionsProps) {
           <SheetContent side="left" className="p-0">
             <SheetTitle className="sr-only">Menu Principal</SheetTitle>
             <SheetDescription className="sr-only">Navegação principal do site.</SheetDescription>
-            
+
             <MobileSidebar user={user} isAdmin={isAdmin} onClose={() => setMobileMenuOpen(false)} />
           </SheetContent>
         </Sheet>

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { createClient } from '@/lib/supabase/client';
 
 interface BaseData {
   id: string;
@@ -34,7 +35,8 @@ export function EventRegistrationForm({ eventId, regions }: EventRegistrationFor
 
   const [message, setMessage] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [isExistingUser, setIsExistingUser] = useState(false);
+  const [isExistingUser, setIsExistingUser] = useState<boolean | null>(null);
+  const [checkingUser, setCheckingUser] = useState(false);
 
   const handleFormAction = async (formData: FormData) => {
     const result = await registerForEvent(formData);
@@ -42,13 +44,20 @@ export function EventRegistrationForm({ eventId, regions }: EventRegistrationFor
     setIsSuccess(result.success);
     if (result.success) {
       formRef.current?.reset();
-  } };
+    }
+  };
 
   const checkUser = async (email: string) => {
     if (!email || !email.includes('@')) {
-      setIsExistingUser(false);
+      setIsExistingUser(null);
       return;
-  } };
+    }
+    setCheckingUser(true);
+    const supabase = createClient();
+    const { data, error } = await supabase.from('Users').select('id').eq('email', email).single();
+    setIsExistingUser(!!data && !error);
+    setCheckingUser(false);
+  };
 
   return (
     <form ref={formRef} action={handleFormAction} className="w-full max-w-lg mx-auto bg-card p-8 rounded-lg shadow-md border">
@@ -58,20 +67,22 @@ export function EventRegistrationForm({ eventId, regions }: EventRegistrationFor
         <div className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Seu Melhor E-mail</Label>
-            <Input 
-              type="email" 
-              id="email" 
-              name="email" 
-              required 
-              placeholder="seu@email.com" 
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="seu@email.com"
               onBlur={(e) => checkUser(e.target.value)}
             />
-             <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Usaremos este e-mail para confirmar sua presença. Se você já é nosso apoiador, use o mesmo e-mail.
             </p>
           </div>
 
-          {!isExistingUser && (
+          {checkingUser && <p className="text-sm text-muted-foreground">Verificando e-mail...</p>}
+
+          {isExistingUser === false && (
             <>
               <div className="grid gap-2">
                 <Label htmlFor="name">Nome Completo</Label>
@@ -99,7 +110,7 @@ export function EventRegistrationForm({ eventId, regions }: EventRegistrationFor
             </>
           )}
         </div>
-        
+
         {message && (
           <div className={`text-sm font-medium p-3 rounded-md text-center ${isSuccess ? 'bg-green-100 text-green-800' : 'bg-destructive/10 text-destructive'}`}>
             {message}

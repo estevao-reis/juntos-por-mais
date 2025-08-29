@@ -197,7 +197,7 @@ export async function signIn(
   const password = formData.get("password") as string;
   const supabase = await createClient();
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -207,8 +207,20 @@ export async function signIn(
     return { success: false, message: "Credenciais inválidas." };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/painel");
+  if (signInData.user) {
+    const { data: profile } = await supabase
+      .from('Users')
+      .select('role')
+      .eq('auth_id', signInData.user.id)
+      .single();
+
+    revalidatePath("/", "layout");
+
+    if (profile?.role === 'ADMIN') {
+      redirect('/admin/dashboard');
+  } }
+
+  redirect('/painel');
 }
 
 export async function signOut() {

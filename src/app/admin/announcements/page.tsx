@@ -1,7 +1,6 @@
 import { AnnouncementForm } from "@/components/AnnouncementForm";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AnnouncementCard } from "@/components/AnnouncementCard";
 
@@ -23,9 +22,6 @@ export default async function AnnouncementsPage() {
           <h1 className="text-3xl font-bold">Gerenciar Avisos</h1>
           <p className="text-muted-foreground mt-2">Envie, edite ou exclua comunicados para os líderes.</p>
         </div>
-        <Link href="/admin/dashboard">
-          <Button variant="outline">Voltar para o Relatório</Button>
-        </Link>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">

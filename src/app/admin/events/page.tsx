@@ -25,9 +25,6 @@ export default async function ManageEventsPage() {
           <h1 className="text-3xl font-bold">Gerenciar Eventos</h1>
           <p className="text-muted-foreground mt-2">Crie e acompanhe os eventos da sua rede.</p>
         </div>
-        <Link href="/admin/dashboard">
-          <Button variant="outline">Voltar para o Dashboard</Button>
-        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">

@@ -2,8 +2,6 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { UsersTable } from "@/components/UsersTable";
 import { getUsersWithRoles } from "@/app/actions";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export default async function ManageUsersPage() {
   const supabase = await createClient();
@@ -31,9 +29,6 @@ export default async function ManageUsersPage() {
             Promova líderes a administradores ou gerencie perfis.
           </p>
         </div>
-        <Link href="/admin/dashboard">
-          <Button variant="outline">Voltar para o Dashboard</Button>
-        </Link>
       </div>
 
       <UsersTable users={users} />

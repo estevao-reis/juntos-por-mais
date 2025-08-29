@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Home, ListChecks, LayoutList, LayoutDashboard, Text, LogIn, LogOut, UserPlus, UserCircle } from 'lucide-react';
+import { Home, ListChecks, LayoutList, LayoutDashboard, Text, LogIn, LogOut, UserPlus, UserCircle, CalendarPlus } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { signOut } from '@/app/actions';
 import Image from 'next/image';
@@ -32,6 +32,7 @@ const leaderLinks = [
 const adminLinks = [
   { href: '/admin/dashboard', title: 'Relatório Geral', icon: LayoutDashboard },
   { href: '/admin/announcements', title: 'Gerenciar Avisos', icon: Text },
+  { href: '/admin/events', title: 'Gerenciar Eventos', icon: CalendarPlus },
   { href: '/admin/usuarios', title: 'Gerenciar Usuários', icon: UserPlus },
 ];
 
@@ -56,7 +57,7 @@ export function MobileSidebar({ user, isAdmin, onClose }: MobileSidebarProps) {
     <div className="flex flex-col h-full">
       <div className="p-6 border-b">
         <Link href="/" onClick={onClose} className="flex items-center gap-3 text-lg font-semibold text-foreground">
-          <Image 
+          <Image
             src="/logo.png"
             alt="Juntos por Mais Logo"
             width={32}
