@@ -1,32 +1,26 @@
 'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useActionState } from 'react'; // 1. Importar de 'react'
+import { useFormStatus } from 'react-dom'; // useFormStatus continua em 'react-dom'
 import { signIn } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+// Componente para o botão de submit, que mostra o estado de "pending"
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <Button type="submit" className="w-full" disabled={pending}>
+      {pending ? "Entrando..." : "Entrar"}
+    </Button>
+  );
+}
+
 export function LoginForm() {
-  const router = useRouter(); // Inicializar o router
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setPending(true);
-    setError(null);
-
-    const formData = new FormData(event.currentTarget);
-    const result = await signIn(formData);
-
-    if (result.success && result.redirectTo) {
-      router.push(result.redirectTo);
-    } else {
-      setError(result.message);
-      setPending(false);
-  } };
+  // 2. Renomear useFormState para useActionState
+  const [state, formAction] = useActionState(signIn, null);
 
   return (
     <Card className="w-full max-w-sm">
@@ -36,7 +30,7 @@ export function LoginForm() {
           Acesse sua conta para visualizar o painel.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit}>
+      <form action={formAction}>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -47,15 +41,15 @@ export function LoginForm() {
             <Input id="password" type="password" name="password" required />
           </div>
 
-          {error && (
+          {/* Exibe a mensagem de erro se a ação 'signIn' retornar uma */}
+          {state && !state.success && (
             <div className="text-sm font-medium text-destructive">
-              {error}
+              {state.message}
             </div>
           )}
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? "Entrando..." : "Entrar"}
-          </Button>
+          <SubmitButton />
         </CardContent>
       </form>
     </Card>
-); }
+  );
+}

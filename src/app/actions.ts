@@ -191,8 +191,9 @@ export async function signUpLeader(formData: FormData): Promise<ActionResult> {
 
 
 export async function signIn(
+  previousState: any,
   formData: FormData
-): Promise<{ success: boolean; message: string; redirectTo?: string }> {
+): Promise<{ success: boolean; message: string }> {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const supabase = await createClient();
@@ -217,10 +218,10 @@ export async function signIn(
     revalidatePath("/", "layout");
 
     if (profile?.role === 'ADMIN') {
-      return { success: true, message: "Login bem-sucedido!", redirectTo: '/admin/dashboard' };
+      redirect('/admin/dashboard');
   } }
 
-  return { success: true, message: "Login bem-sucedido!", redirectTo: '/painel' };
+  redirect('/painel');
 }
 
 export async function signOut() {
