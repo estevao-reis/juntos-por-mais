@@ -11,12 +11,12 @@ interface Registrant {
   leader_name: string | null;
 }
 
-interface AdminEventDetailsPageProps {
-  params: {
-    slug: string;
-}; }
+type Props = {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+};
 
-export default async function AdminEventDetailsPage({ params }: AdminEventDetailsPageProps) {
+export default async function AdminEventDetailsPage({ params }: Props) {
   const { slug } = params;
   const supabase = await createClient();
 
