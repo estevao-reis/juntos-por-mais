@@ -18,8 +18,8 @@ const socials = [
 ];
 
 const stats = [
-  { value: "+15", label: "Anos de Vida Pública" },
-  { value: "+1.000", label: "Vidas Impactadas" },
+  { value: "+30", label: "Anos de Vida Pública" },
+  { value: "+200.000", label: "Vidas Impactadas" },
   { value: "35", label: "Regiões do DF" },
 ];
 
