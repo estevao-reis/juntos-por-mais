@@ -19,7 +19,7 @@ const socials = [
 
 const stats = [
   { value: "+30", label: "Anos de Vida Pública" },
-  { value: "+200.000", label: "Vidas Impactadas" },
+  { value: "+200.000", label: "Vidas Alcançadas e Beneficiadas" },
   { value: "35", label: "Regiões do DF" },
 ];
 
@@ -42,10 +42,6 @@ export function HeroSection() {
         <div className="flex flex-col md:flex-row gap-82 items-center justify-between w-full">
           
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
-            <span className="mb-4 text-sm font-bold uppercase tracking-widest text-slate-300">
-              Juntos por Mais
-            </span>
-            
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
               Unindo Forças por um <span className="text-blue-400">Distrito Federal</span> mais Justo, com Estevão Reis.
             </h1>
@@ -95,7 +91,7 @@ export function HeroSection() {
                />
              </div>
              
-             <div className="grid grid-cols-3 gap-4 text-center w-full max-w-sm">
+             <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-4 text-center w-full max-w-sm">
                 {stats.map((stat) => (
                   <div key={stat.label}>
                     <h3 className="text-3xl lg:text-4xl font-bold text-slate-200 tracking-tighter">{stat.value}</h3>
