@@ -641,27 +641,55 @@ export async function removeAvatar(): Promise<ActionResult> {
   return { success: true, message: 'Foto de perfil removida com sucesso.' };
 }
 
+
 export async function deleteUserByAdmin(userId: string, authId: string | null): Promise<ActionResult> {
   const supabase = await createClient();
 
   const { data: { user: adminUser } } = await supabase.auth.getUser();
   if (!adminUser) return { success: false, message: "Acesso negado: você não está autenticado." };
-  
+
   const { data: adminProfile } = await supabase.from('Users').select('role').eq('auth_id', adminUser.id).single();
   if (adminProfile?.role !== 'ADMIN') return { success: false, message: "Acesso negado: permissão de administrador necessária." };
-  
+
   if (adminUser.id === authId) {
       return { success: false, message: "Um administrador não pode excluir a própria conta." };
   }
 
+  const cookieStore = await cookies();
+  
+  const supabaseAdmin = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options });
+          } catch (error) {
+            // Ignorado em Server Actions
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value: '', ...options });
+          } catch (error) {
+            // Ignorado em Server Actions
+  } }, }, } );
+
+  await supabaseAdmin.from('Users').update({ leader_id: null }).eq('leader_id', userId);
+  await supabaseAdmin.from('EventRegistrations').update({ leader_id: null }).eq('leader_id', userId);
+
   if (authId) {
-      const { error: authError } = await supabase.auth.admin.deleteUser(authId);
+      const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(authId);
       if (authError && authError.message !== 'User not found') {
           console.error("Erro ao deletar usuário da autenticação:", authError);
           return { success: false, message: `Falha ao remover autenticação do usuário: ${authError.message}` };
   } }
 
-  const { error: dbError } = await supabase.from('Users').delete().eq('id', userId);
+  const { error: dbError } = await supabaseAdmin.from('Users').delete().eq('id', userId);
   if (dbError) {
       console.error("Erro ao deletar perfil do usuário:", dbError);
       return { success: false, message: `Falha ao remover perfil do usuário: ${dbError.message}` };
@@ -836,4 +864,57 @@ export async function registerForEvent(formData: FormData): Promise<ActionResult
 
   revalidatePath(`/eventos/`);
   return { success: true, message: "Presença confirmada com sucesso! Obrigado por participar." };
+}
+
+
+export async function updateEvent(formData: FormData): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "Acesso negado." };
+
+  const { data: profile } = await supabase.from('Users').select('role').eq('auth_id', user.id).single();
+  if (profile?.role !== 'ADMIN') return { success: false, message: "Permissão de administrador necessária." };
+
+  const id = formData.get('id') as string;
+  const name = formData.get('name') as string;
+  const event_date = formData.get('event_date') as string;
+  const description = formData.get('description') as string;
+
+  if (!id || !name || !event_date) {
+    return { success: false, message: "ID, nome e data do evento são obrigatórios." };
+  }
+
+  const { error } = await supabase
+    .from('Events')
+    .update({ name, event_date, description })
+    .eq('id', id);
+
+  if (error) {
+    console.error("Erro ao atualizar evento:", error);
+    return { success: false, message: `Falha ao atualizar evento: ${error.message}` };
+  }
+
+  revalidatePath('/admin/events');
+  return { success: true, message: "Evento atualizado com sucesso!" };
+}
+
+export async function deleteEvent(id: string): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { success: false, message: "Acesso negado." };
+
+  const { data: profile } = await supabase.from('Users').select('role').eq('auth_id', user.id).single();
+  if (profile?.role !== 'ADMIN') return { success: false, message: "Permissão de administrador necessária." };
+
+  const { error } = await supabase.from('Events').delete().eq('id', id);
+
+  if (error) {
+    console.error("Erro ao excluir evento:", error);
+    return { success: false, message: `Falha ao excluir evento: ${error.message}` };
+  }
+
+  revalidatePath('/admin/events');
+  return { success: true, message: "Evento excluído com sucesso." };
 }

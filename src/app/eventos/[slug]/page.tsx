@@ -69,7 +69,7 @@ export default function EventPage() {
   }
 
   if (!event) {
-    return null; // ou uma mensagem de "evento não encontrado"
+    return null;
   }
 
   return (
