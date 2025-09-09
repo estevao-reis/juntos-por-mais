@@ -18,12 +18,12 @@ import { MobileSidebar } from './Mobilesidebar';
 import { useState } from 'react';
 
 const leaderLinks = [
-  { href: '/painel', title: 'Meu Dashboard' },
+  { href: '/painel', title: 'Meu Painel' },
   { href: '/painel/perfil', title: 'Meu Perfil' },
 ];
 
 const adminLinks = [
-  { href: '/admin/dashboard', title: 'Dashboard Geral' },
+  { href: '/admin/dashboard', title: 'Painel Geral' },
   { href: '/admin/announcements', title: 'Gerenciar Avisos' },
   { href: '/admin/events', title: 'Gerenciar Eventos' },
   { href: '/admin/usuarios', title: 'Gerenciar Usuários' },
