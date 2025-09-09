@@ -25,12 +25,12 @@ const guestLinks = [
 ]
 
 const leaderLinks = [
-  { href: '/painel', title: 'Mural de Avisos', icon: LayoutList },
+  { href: '/painel', title: 'Meu Painel', icon: LayoutList },
   { href: '/painel/perfil', title: 'Meu Perfil', icon: UserCircle },
 ];
 
 const adminLinks = [
-  { href: '/admin/dashboard', title: 'Relatório Geral', icon: LayoutDashboard },
+  { href: '/admin/dashboard', title: 'Painel Geral', icon: LayoutDashboard },
   { href: '/admin/announcements', title: 'Gerenciar Avisos', icon: Text },
   { href: '/admin/events', title: 'Gerenciar Eventos', icon: CalendarPlus },
   { href: '/admin/usuarios', title: 'Gerenciar Usuários', icon: UserPlus },
