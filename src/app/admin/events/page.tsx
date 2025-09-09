@@ -87,7 +87,7 @@ export default function ManageEventsPage() {
                                   events.map(event => (
                                       <TableRow key={event.id}>
                                           <TableCell className="font-medium">{event.name}</TableCell>
-                                          <TableCell>{new Date(event.event_date).toLocaleDateString('pt-BR')}</TableCell>
+                                          <TableCell>{new Date(event.event_date).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</TableCell>
                                           <TableCell className="text-right space-x-2">
                                               <Link href={`/admin/events/${event.slug}`}>
                                                   <Button variant="outline" size="sm">

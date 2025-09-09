@@ -56,7 +56,7 @@ export function UpcomingEventsList({ events, leaderId }: UpcomingEventsListProps
                   <h3 className="font-semibold">{event.name}</h3>
                   <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
                     <Calendar className="h-4 w-4" />
-                    {new Date(event.event_date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    {new Date(event.event_date).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

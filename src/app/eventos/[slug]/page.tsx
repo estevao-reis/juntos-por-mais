@@ -87,6 +87,7 @@ export default function EventPage() {
                     <CardDescription className="flex items-center gap-2 pt-2">
                         <Calendar className="h-4 w-4" />
                         {new Date(event.event_date).toLocaleDateString('pt-BR', {
+                            weekday: 'long',
                             day: '2-digit',
                             month: 'long',
                             year: 'numeric',
