@@ -1,11 +1,12 @@
 import { createClient } from '@/lib/supabase/server';
 import { HeroSection } from '@/components/HeroSection';
 import { AboutSection } from '@/components/AboutSection';
+import { CausesSection } from '@/components/CausesSection';
 import { CTASection } from '@/components/CTASection';
 
 export default async function HomePage() {
   const supabase = await createClient();
-  
+
   const [leadersRes, regionsRes] = await Promise.all([
     supabase.from('Users').select('id, name').eq('role', 'LEADER'),
     supabase.from('AdministrativeRegions').select('id, name').order('name')
@@ -21,6 +22,7 @@ export default async function HomePage() {
     <>
       <HeroSection />
       <CTASection leaders={leaders} regions={regions} />
+      <CausesSection />
       <AboutSection />
     </>
 ); }

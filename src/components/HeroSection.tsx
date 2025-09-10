@@ -40,22 +40,21 @@ export function HeroSection() {
 
       <div className="relative z-10 container mx-auto flex flex-col justify-center items-center min-h-screen px-4 sm:px-6 lg:px-8 pt-24 pb-20 md:pt-16 md:pb-16">
         <div className="flex flex-col md:flex-row gap-82 items-center justify-between w-full">
-          
+
           <div className="flex flex-col items-center text-center md:items-start md:text-left">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-              Unindo Forças por um <span className="text-blue-400">Distrito Federal</span> mais Justo, com Estevão Reis.
+              Vamos juntos construir um <span className="text-blue-400">DF mais justo, humano</span> e com oportunidades para todos!
             </h1>
 
             <p className="mt-6 text-lg text-slate-300 max-w-xl">
-              Cada novo apoiador fortalece nossa rede e amplia nossa voz. Ao se
-              cadastrar, você se torna parte ativa da mudança.
+              Com Estevão Reis, cada novo apoio planta uma semente real de transformação. Cadastre-se agora e assuma seu papel de protagonista nessa mudança — sua voz inspira, sua presença fortalece e sua atitude faz a diferença!
             </p>
 
             <div className="mt-10 w-full flex flex-col items-center md:items-start gap-8">
                <a href="#cadastro">
                 <Button
                   size="lg"
-                  className="bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-lg transition-transform hover:scale-105 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-1000"
+                  className="bg-blue-300 text-slate-900 font-bold hover:bg-blue-300 shadow-lg transition-transform hover:scale-105 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-1000"
                 >
                   Quero Apoiar Agora
                   <ArrowDown className="ml-2 h-5 w-5" />
@@ -90,7 +89,7 @@ export function HeroSection() {
                  className="object-cover"
                />
              </div>
-             
+
              <div className="grid grid-cols-[1fr_1.5fr_1fr] gap-4 text-center w-full max-w-sm">
                 {stats.map((stat) => (
                   <div key={stat.label}>
@@ -101,14 +100,17 @@ export function HeroSection() {
              </div>
 
              <a href="#sobre">
-                <Button variant="outline" className="bg-transparent text-white hover:bg-white/10 border-white/50">
+                <Button 
+                  variant="outline" 
+                  className="bg-transparent text-white border-white/50 hover:bg-white/20 hover:text-white transition-colors duration-300"
+                >
                     Conheça Estevão Reis
                     <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
              </a>
           </div>
         </div>
-        
+
         <div className="md:hidden flex flex-col items-center gap-10 mt-16 w-full">
           <div className="relative h-48 w-48 rounded-full overflow-hidden shadow-lg border-4 border-primary/20">
               <Image
@@ -130,7 +132,10 @@ export function HeroSection() {
             </div>
 
             <a href="#sobre">
-                <Button variant="outline" className="bg-transparent text-white hover:bg-white/10 border-white/50">
+                <Button 
+                  variant="outline" 
+                  className="bg-transparent text-white border-white/50 hover:bg-white/20 hover:text-white transition-colors duration-300"
+                >
                     Conheça Estevão Reis
                     <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
