@@ -19,7 +19,6 @@ export default function HomePage() {
 
   const [leaders, setLeaders] = useState<BaseData[]>([]);
   const [regions, setRegions] = useState<BaseData[]>([]);
-  // A variável 'loading' foi removida.
 
   useEffect(() => {
     const supabase = createClient();

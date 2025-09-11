@@ -83,19 +83,24 @@ export default function EventPage() {
         <div className="order-1 lg:order-2">
             <Card className="bg-card">
                 <CardHeader>
-                    <CardTitle className="text-3xl font-bold tracking-tight">{event.name}</CardTitle>
-                    <CardDescription className="flex items-center gap-2 pt-2">
-                        <Calendar className="h-4 w-4" />
-                        {new Date(event.event_date).toLocaleDateString('pt-BR', {
-                            weekday: 'long',
-                            day: '2-digit',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        })}
-                    </CardDescription>
+                  <CardTitle className="text-3xl font-bold tracking-tight">
+                    {event.name}
+                  </CardTitle>
+                  
+                  <CardDescription className="flex items-center gap-2 pt-2">
+                      <Calendar className="h-4 w-4" />
+                      {new Date(event.event_date).toLocaleString('pt-BR', {
+                          weekday: 'long',
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          timeZone: 'America/Sao_Paulo'
+                      })}
+                  </CardDescription>
                 </CardHeader>
+              
                 <CardContent>
                     <div className="prose prose-sm dark:prose-invert text-muted-foreground whitespace-pre-wrap">
                         <Info className="inline-block mr-2 h-4 w-4" />

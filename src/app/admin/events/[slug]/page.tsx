@@ -121,10 +121,16 @@ export default function AdminEventDetailsPage() {
         <div>
             <h1 className="text-3xl font-bold">{event.name}</h1>
             <p className="text-muted-foreground mt-2 flex items-center gap-2">
-            <Calendar className="h-4 w-4" />
-            {new Date(event.event_date).toLocaleDateString('pt-BR', {
-                weekday: 'long', day: '2-digit', month: 'long', year: 'numeric'
-            })}
+              <Calendar className="h-4 w-4" />
+              {new Date(event.event_date).toLocaleString('pt-BR', {
+                  weekday: 'long',
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  timeZone: 'America/Sao_Paulo'
+              })}
             </p>
         </div>
         <Button onClick={handleExportPDF} disabled={registrants.length === 0}>

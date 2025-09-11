@@ -58,7 +58,15 @@ export function UpcomingEventsList({ events, leaderId }: UpcomingEventsListProps
                   <h3 className="font-semibold">{event.event_name}</h3>
                   <p className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
                     <Calendar className="h-4 w-4" />
-                    {new Date(event.event_date).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}
+                    {new Date(event.event_date).toLocaleString('pt-BR', {
+                      weekday: 'long',
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      timeZone: 'America/Sao_Paulo'
+                    })}
                   </p>
                 </div>
                 
@@ -74,7 +82,6 @@ export function UpcomingEventsList({ events, leaderId }: UpcomingEventsListProps
                 </div>
 
                 <div className="flex items-center gap-2">
-                    {/* AQUI: Usando o leaderId que vem das props */}
                     <Button onClick={() => handleCopy(event.event_slug)} size="sm" variant="outline">
                       {copiedLink === event.event_slug ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
                       {copiedLink === event.event_slug ? 'Copiado!' : 'Copiar Link'}
