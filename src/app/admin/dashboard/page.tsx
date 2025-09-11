@@ -7,9 +7,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Users, UserPlus, Calendar, ClipboardCheck } from "lucide-react";
+import { SupportersByRegionChart } from "@/components/charts/SupportersByRegionChart";
 
 interface LeaderStats {
   leader_id: string;
@@ -22,6 +23,11 @@ interface DashboardInsight {
   total_leaders: number;
   total_events: number;
   total_registrations: number;
+}
+
+interface RegionData {
+    region_name: string;
+    supporter_count: number;
 }
 
 export default async function AdminDashboardPage() {
@@ -42,9 +48,10 @@ export default async function AdminDashboardPage() {
     redirect('/painel');
   }
 
-  const [leaderDataRes, insightsRes] = await Promise.all([
+  const [leaderDataRes, insightsRes, regionDataRes] = await Promise.all([
     supabase.rpc('get_leader_partner_counts'),
-    supabase.rpc('get_dashboard_insights').single()
+    supabase.rpc('get_dashboard_insights').single(),
+    supabase.rpc('get_supporters_by_region_counts')
   ]);
 
   if (leaderDataRes.error) {
@@ -53,9 +60,13 @@ export default async function AdminDashboardPage() {
    if (insightsRes.error) {
     console.error("Erro ao buscar insights do dashboard:", insightsRes.error);
   }
+   if (regionDataRes.error) {
+    console.error("Erro ao buscar dados por região:", regionDataRes.error);
+  }
 
   const leaderData = (leaderDataRes.data as LeaderStats[]) || [];
   const insights = insightsRes.data as DashboardInsight | null;
+  const regionData = (regionDataRes.data as RegionData[]) || [];
 
   return (
     <div className="container mx-auto p-8">
@@ -105,36 +116,41 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Desempenho dos Líderes</CardTitle>
-          <CardDescription>Apoiadores cadastrados por cada líder da rede.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nome do Líder</TableHead>
-                <TableHead className="text-right">Apoiadores Cadastrados</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {leaderData && leaderData.length > 0 ? (
-                leaderData.map((leader: LeaderStats) => (
-                  <TableRow key={leader.leader_id}>
-                    <TableCell className="font-medium">{leader.leader_name}</TableCell>
-                    <TableCell className="text-right text-lg font-bold">{leader.partner_count}</TableCell>
+      <div className="grid gap-8 lg:grid-cols-2">
+        <SupportersByRegionChart data={regionData} />
+        <Card>
+          <CardHeader>
+            <CardTitle>Desempenho dos Líderes</CardTitle>
+            <CardDescription>Apoiadores cadastrados por cada líder da rede.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="max-h-[350px] overflow-y-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome do Líder</TableHead>
+                    <TableHead className="text-right">Apoiadores Cadastrados</TableHead>
                   </TableRow>
-              )) ) : (
-                <TableRow>
-                  <TableCell colSpan={2} className="h-24 text-center">
-                    Nenhum líder encontrado.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                </TableHeader>
+                <TableBody>
+                  {leaderData && leaderData.length > 0 ? (
+                    leaderData.map((leader: LeaderStats) => (
+                      <TableRow key={leader.leader_id}>
+                        <TableCell className="font-medium">{leader.leader_name}</TableCell>
+                        <TableCell className="text-right text-lg font-bold">{leader.partner_count}</TableCell>
+                      </TableRow>
+                  )) ) : (
+                    <TableRow>
+                      <TableCell colSpan={2} className="h-24 text-center">
+                        Nenhum líder encontrado.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
 ); }

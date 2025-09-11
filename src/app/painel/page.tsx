@@ -5,6 +5,7 @@ import { getReferredSupporters } from "../actions";
 import { SupportersList } from "@/components/SupportersList";
 import { UpcomingEventsList } from "@/components/UpcomingEventsList";
 import { ReferralLink } from "@/components/ReferralLink";
+import { Leaderboard } from "@/components/Leaderboard";
 
 export default async function PainelPage() {
   const supabase = await createClient();
@@ -24,17 +25,20 @@ export default async function PainelPage() {
     return redirect('/login');
   }
 
-  const isLeader = profile.role === 'LEADER';
+  const isLeader = profile.role === 'LEADER' || profile.role === 'ADMIN';
 
-  const [announcementsRes, supportersRes, eventsRes] = await Promise.all([
+  const [announcementsRes, supportersRes, eventsRes, leaderStatsRes] = await Promise.all([
     supabase.from('Announcements').select('*').order('created_at', { ascending: false }),
     getReferredSupporters(),
-    supabase.from('Events').select('id, name, slug, event_date').order('event_date', { ascending: true })
+    supabase.rpc('get_event_stats'),
+    supabase.rpc('get_leader_partner_counts')
   ]);
 
   const announcements = announcementsRes.data || [];
   const supporters = supportersRes;
   const events = eventsRes.data || [];
+  const leaderStats = leaderStatsRes.data || [];
+
 
   return (
     <div className="container mx-auto p-8">
@@ -49,9 +53,10 @@ export default async function PainelPage() {
 
       <main className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         <div className="lg:col-span-2 grid gap-8">
-            {isLeader && <ReferralLink userId={profile.id} />}
-            {isLeader && <UpcomingEventsList events={events} leaderId={profile.id} />}
-            <SupportersList supporters={supporters} userId={isLeader ? profile.id : undefined} />
+          {isLeader && <ReferralLink userId={profile.id} />}
+          {isLeader && <UpcomingEventsList events={events} leaderId={profile.id} />}
+          {isLeader && <Leaderboard leaderStats={leaderStats} />}
+          <SupportersList supporters={supporters} userId={isLeader ? profile.id : undefined} />
         </div>
 
         <div className="lg:col-span-1">

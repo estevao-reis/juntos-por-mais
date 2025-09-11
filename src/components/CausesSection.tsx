@@ -1,5 +1,4 @@
 import { TrendingUp, BrainCircuit, Users, PawPrint, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 const causes = [
   { 
@@ -66,17 +65,6 @@ export function CausesSection() {
               </div>
             );
           })}
-        </div>
-
-        <div className="text-center mt-20">
-          <p className="text-2xl font-semibold text-primary mb-4">
-            É hora de agir. Um Distrito Federal melhor começa com você!
-          </p>
-          <a href='/cadastro'>
-            <Button size="lg" className="bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-lg transition-transform hover:scale-105">
-              Junte-se a Nós
-            </Button>
-          </a>
         </div>
       </div>
     </section>

@@ -18,7 +18,7 @@ export function ReferralLink({ userId }: ReferralLinkProps) {
 
   useEffect(() => {
     const origin = window.location.origin;
-    setReferralLink(`${origin}/cadastro?ref=${userId}`);
+    setReferralLink(`${origin}/?ref=${userId}`);
   }, [userId]);
 
   const handleCopy = () => {
