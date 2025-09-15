@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { updateEvent } from '@/app/actions';
+import { updateEvent } from '@/lib/actions/event.actions';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
@@ -14,6 +14,7 @@ type Event = {
   name: string;
   event_date: string;
   description: string | null;
+  location: string | null;
 };
 
 interface EditEventModalProps {
@@ -27,7 +28,7 @@ export function EditEventModal({ event, onClose }: EditEventModalProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [pending, setPending] = useState(false);
 
-  const formattedDate = new Date(event.event_date).toISOString().slice(0, 16);
+  const formattedDate = new Date(new Date(event.event_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
@@ -76,6 +77,10 @@ export function EditEventModal({ event, onClose }: EditEventModalProps) {
             <div className="grid gap-2">
               <Label htmlFor="event_date">Data e Hora</Label>
               <Input id="event_date" name="event_date" type="datetime-local" defaultValue={formattedDate} required />
+            </div>
+            <div className="grid gap-2">
+                <Label htmlFor="location">Local do Evento</Label>
+                <Input id="location" name="location" defaultValue={event.location ?? ''} placeholder="Ex: Salão Comunitário, Praça Central"/>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="description">Descrição</Label>

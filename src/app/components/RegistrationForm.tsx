@@ -1,6 +1,6 @@
 'use client';
 
-import { registerPartner } from '@/app/actions';
+import { registerPartner } from '@/lib/actions/user.actions';
 import { useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from "@/components/ui/button";

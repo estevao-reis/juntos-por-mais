@@ -1,6 +1,6 @@
 'use client';
 
-import { sendAnnouncement } from "@/app/actions";
+import { sendAnnouncement } from "@/lib/actions/announcement.actions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useRef } from "react";

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Menu } from 'lucide-react';
-import { signOut } from '@/app/actions';
+import { signOut } from '@/lib/actions/auth.actions';
 import { MobileSidebar } from './Mobilesidebar';
 import { useState } from 'react';
 

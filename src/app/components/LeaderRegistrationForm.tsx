@@ -1,6 +1,6 @@
 'use client';
 
-import { signUpLeader } from '@/app/actions';
+import { signUpLeader } from '@/lib/actions/auth.actions';
 import { useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from "@/components/ui/button";

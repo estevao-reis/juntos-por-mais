@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { UserCircle, UploadCloud, Trash2, Loader2 } from "lucide-react";
-import { updateAvatarUrl, removeAvatar } from "@/app/actions";
+import { updateAvatarUrl, removeAvatar } from "@/lib/actions/user.actions";
 
 interface AvatarUploaderProps {
   userId: string;

@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { redirect } from "next/navigation";
-import { getReferredSupporters } from "../actions";
+import { getReferredSupporters } from "@/lib/actions/user.actions";
 import { SupportersList } from "@/components/SupportersList";
 import { UpcomingEventsList } from "@/components/UpcomingEventsList";
 import { ReferralLink } from "@/components/ReferralLink";

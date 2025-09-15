@@ -1,6 +1,6 @@
 'use client';
 
-import { createEvent } from "@/app/actions";
+import { createEvent } from "@/lib/actions/event.actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -39,12 +39,16 @@ export function EventForm() {
         <Input id="event_date" name="event_date" type="datetime-local" required />
       </div>
       <div className="grid gap-2">
+        <Label htmlFor="location">Local do Evento</Label>
+        <Input id="location" name="location" placeholder="Ex: Salão Comunitário, Praça Central" />
+      </div>
+      <div className="grid gap-2">
         <Label htmlFor="description">Descrição do Evento</Label>
         <Textarea
           id="description"
           name="description"
-          placeholder="Descreva o objetivo, local, e outras informações importantes sobre o evento."
-          rows={5}
+          placeholder="Descreva o objetivo e outras informações importantes sobre o evento."
+          rows={4}
         />
       </div>
       <SubmitButton />

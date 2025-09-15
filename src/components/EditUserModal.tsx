@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { updateUserCoreInfoByAdmin } from '@/app/actions';
+import { updateUserCoreInfoByAdmin } from '@/lib/actions/user.actions';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';

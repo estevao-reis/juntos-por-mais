@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Home, ListChecks, LayoutList, LayoutDashboard, Text, LogIn, LogOut, UserPlus, UserCircle, CalendarPlus } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
-import { signOut } from '@/app/actions';
+import { signOut } from '@/lib/actions/auth.actions';
 import Image from 'next/image';
 
 interface MobileSidebarProps {

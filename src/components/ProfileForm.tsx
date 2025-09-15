@@ -1,6 +1,6 @@
 'use client';
 
-import { updateUserProfile } from '@/app/actions';
+import { updateUserProfile } from '@/lib/actions/user.actions';
 import { useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Button } from "@/components/ui/button";

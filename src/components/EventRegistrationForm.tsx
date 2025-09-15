@@ -1,6 +1,6 @@
 'use client';
 
-import { registerForEvent } from '@/app/actions';
+import { registerForEvent } from '@/lib/actions/event.actions';
 import { useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { useSearchParams } from 'next/navigation';
@@ -60,7 +60,7 @@ export function EventRegistrationForm({ eventId, regions }: EventRegistrationFor
   };
 
   return (
-    <form ref={formRef} action={handleFormAction} className="w-full max-w-lg mx-auto bg-card p-8 rounded-lg shadow-md border">
+    <form ref={formRef} action={handleFormAction} className="w-full bg-card p-8 rounded-lg shadow-md border">
       <input type="hidden" name="event_id" value={eventId} />
       <input type="hidden" name="leader_id" value={leaderRefId || ''} />
       <div className="grid gap-6">

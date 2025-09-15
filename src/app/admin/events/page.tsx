@@ -8,7 +8,7 @@ import { EventForm } from "@/components/EventForm";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye, Pencil, Trash2 } from "lucide-react";
-import { deleteEvent } from '@/app/actions';
+import { deleteEvent } from '@/lib/actions/event.actions';
 import { EditEventModal } from '@/components/EditEventModal';
 
 type Event = {
@@ -17,6 +17,7 @@ type Event = {
   slug: string;
   event_date: string;
   description: string | null;
+  location: string | null;
   created_at: string;
 };
 
@@ -26,11 +27,23 @@ export default function ManageEventsPage() {
 
   useEffect(() => {
     const supabase = createClient();
+    const channel = supabase
+      .channel('realtime events')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'Events' }, (payload) => {
+        fetchEvents();
+      })
+      .subscribe();
+
     async function fetchEvents() {
       const { data } = await supabase.from('Events').select('*').order('event_date', { ascending: false });
-      setEvents(data || []);
+      setEvents(data as Event[] || []);
     }
+
     fetchEvents();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const handleDelete = async (eventId: string) => {
@@ -69,7 +82,7 @@ export default function ManageEventsPage() {
               </CardContent>
             </Card>
           </div>
-          
+
           <div className="lg:col-span-2">
               <h2 className="text-2xl font-semibold tracking-tight mb-6">Eventos Criados</h2>
               <Card>

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { deleteUserByAdmin, updateUserRole } from "@/app/actions";
+import { deleteUserByAdmin, updateUserRole } from "@/lib/actions/user.actions";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Edit, Trash2, Search, Eye } from "lucide-react";

@@ -27,7 +27,7 @@ export function UpcomingEventsList({ events, leaderId }: UpcomingEventsListProps
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     return `${origin}/eventos/${eventSlug}?ref=${leaderId}`;
   };
-  
+
   const handleCopy = (eventSlug: string) => {
     const referralLink = getReferralLink(eventSlug);
     navigator.clipboard.writeText(referralLink).then(() => {
@@ -69,7 +69,7 @@ export function UpcomingEventsList({ events, leaderId }: UpcomingEventsListProps
                     })}
                   </p>
                 </div>
-                
+
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <Users className="size-4" />

@@ -91,7 +91,7 @@ export default function AdminEventDetailsPage() {
 
     doc.text(`Lista de Inscritos - ${event.name}`, 14, 15);
     doc.setFontSize(10);
-    doc.text(`Data do Evento: ${new Date(event.event_date).toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`, 14, 20);
+    doc.text(`Data do Evento: ${new Date(event.event_date).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}`, 14, 20);
     doc.text(`Total de Inscritos: ${registrants.length}`, 14, 25);
 
     autoTable(doc, {

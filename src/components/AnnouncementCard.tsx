@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { deleteAnnouncement, updateAnnouncement } from '@/app/actions';
+import { deleteAnnouncement, updateAnnouncement } from '@/lib/actions/announcement.actions';
 import { Pencil, Trash2 } from 'lucide-react';
 
 type Announcement = {

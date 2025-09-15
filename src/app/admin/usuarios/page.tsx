@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { UsersTable } from "@/components/UsersTable";
-import { getUsersWithRoles } from "@/app/actions";
+import { getUsersWithRoles } from "@/lib/actions/user.actions";
 
 export default async function ManageUsersPage() {
   const supabase = await createClient();

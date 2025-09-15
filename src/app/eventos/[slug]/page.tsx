@@ -4,14 +4,15 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { EventRegistrationForm } from "@/components/EventRegistrationForm";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Info } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar, Info, MapPin } from "lucide-react";
 
 type EventDetails = {
   id: string;
   name: string;
   event_date: string;
   description: string | null;
+  location: string | null;
 };
 
 type Region = {
@@ -72,6 +73,17 @@ export default function EventPage() {
     return null;
   }
 
+  const dateString = new Date(event.event_date).toLocaleString('pt-BR', {
+    weekday: 'long',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'America/Sao_Paulo'
+  });
+  const formattedDate = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+
   return (
     <section className="py-20 bg-muted/40 min-h-screen flex items-center">
       <div className="container mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -86,25 +98,39 @@ export default function EventPage() {
                   <CardTitle className="text-3xl font-bold tracking-tight">
                     {event.name}
                   </CardTitle>
-                  
-                  <CardDescription className="flex items-center gap-2 pt-2">
-                      <Calendar className="h-4 w-4" />
-                      {new Date(event.event_date).toLocaleString('pt-BR', {
-                          weekday: 'long',
-                          day: '2-digit',
-                          month: 'long',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          timeZone: 'America/Sao_Paulo'
-                      })}
-                  </CardDescription>
                 </CardHeader>
-              
+
                 <CardContent>
-                    <div className="prose prose-sm dark:prose-invert text-muted-foreground whitespace-pre-wrap">
-                        <Info className="inline-block mr-2 h-4 w-4" />
-                        {event.description || "Mais informações sobre o evento serão divulgadas em breve."}
+                    <div className="space-y-4">
+                        <div className="flex items-start gap-3 text-sm">
+                            <Info className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="font-semibold">Sobre o Evento</p>
+                                <p className="text-muted-foreground whitespace-pre-wrap">
+                                    {event.description || "Mais informações sobre o evento serão divulgadas em breve."}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 text-sm">
+                            <Calendar className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="font-semibold">Data e Horário</p>
+                                <p className="text-muted-foreground">
+                                    {formattedDate}
+                                </p>
+                            </div>
+                        </div>
+
+                        {event.location && (
+                        <div className="flex items-start gap-3 text-sm">
+                            <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                            <div>
+                            <p className="font-semibold">Local</p>
+                            <p className="text-muted-foreground">{event.location}</p>
+                            </div>
+                        </div>
+                        )}
                     </div>
                 </CardContent>
             </Card>
