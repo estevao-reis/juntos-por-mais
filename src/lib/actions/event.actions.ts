@@ -29,12 +29,16 @@ export async function createEvent(formData: FormData): Promise<ActionResult> {
   if (profile?.role !== 'ADMIN') return { success: false, message: "Acesso negado: Permissão de administrador necessária." };
 
   const name = formData.get('name') as string;
-  const event_date = formData.get('event_date') as string;
+  let event_date = formData.get('event_date') as string;
   const description = formData.get('description') as string;
   const location = formData.get('location') as string;
 
   if (!name || !event_date) {
     return { success: false, message: "Nome e data do evento são obrigatórios." };
+  }
+
+  if (event_date) {
+    event_date = `${event_date}:00-03:00`;
   }
 
   const slug = generateSlug(name);
@@ -136,12 +140,16 @@ export async function updateEvent(formData: FormData): Promise<ActionResult> {
 
   const id = formData.get('id') as string;
   const name = formData.get('name') as string;
-  const event_date = formData.get('event_date') as string;
+  let event_date = formData.get('event_date') as string;
   const description = formData.get('description') as string;
   const location = formData.get('location') as string;
 
   if (!id || !name || !event_date) {
     return { success: false, message: "ID, nome e data do evento são obrigatórios." };
+  }
+
+  if (event_date) {
+    event_date = `${event_date}:00-03:00`;
   }
 
   const { error } = await supabase

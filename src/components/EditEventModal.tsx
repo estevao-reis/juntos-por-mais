@@ -28,7 +28,10 @@ export function EditEventModal({ event, onClose }: EditEventModalProps) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [pending, setPending] = useState(false);
 
-  const formattedDate = new Date(new Date(event.event_date).getTime() - (new Date().getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+  const eventDate = new Date(event.event_date);
+  const formattedDate = new Date(eventDate.getTime() - (eventDate.getTimezoneOffset() * 60000))
+    .toISOString()
+    .slice(0, 16);
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
