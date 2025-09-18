@@ -185,3 +185,49 @@ export async function signOut() {
   revalidatePath("/", "layout");
   return redirect("/login");
 }
+
+export async function requestPasswordReset(
+  previousState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult> {
+  const email = formData.get("email") as string;
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/atualizar-senha`,
+  });
+
+  if (error) {
+    console.error("Erro ao solicitar recuperação de senha:", error);
+    return { success: false, message: "Não foi possível enviar o e-mail de recuperação. Verifique o e-mail digitado." };
+  }
+
+  return { 
+    success: true, 
+    message: "Se uma conta com este e-mail existir, um link de recuperação foi enviado." 
+}; }
+
+export async function updatePassword(
+  previousState: ActionResult | null,
+  formData: FormData
+): Promise<ActionResult> {
+    const password = formData.get("password") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (password !== confirmPassword) {
+        return { success: false, message: "As senhas não coincidem." };
+    }
+    if (password.length < 6) {
+        return { success: false, message: "A senha deve ter no mínimo 6 caracteres." };
+    }
+
+    const supabase = await createClient();
+    const { error } = await supabase.auth.updateUser({ password });
+
+    if (error) {
+        console.error("Erro ao atualizar senha:", error);
+        return { success: false, message: `Falha ao atualizar a senha: ${error.message}` };
+    }
+
+    return { success: true, message: "Sua senha foi atualizada com sucesso! Você já pode fazer o login." };
+}
