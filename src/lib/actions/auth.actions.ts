@@ -11,7 +11,6 @@ type ActionResult = {
   message: string;
 };
 
-// Helpers
 function validateCPF(cpf: string): boolean {
   cpf = cpf.replace(/[^\d]+/g, "");
   if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false;

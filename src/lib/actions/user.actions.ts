@@ -297,7 +297,19 @@ export async function getReferredSupporters() {
 
   const { data, error } = await supabase
     .from('Users')
-    .select('id, name, email, created_at, region:AdministrativeRegions(name)')
+    .select(`
+      id,
+      name,
+      email,
+      created_at,
+      phone_number,
+      birth_date,
+      occupation,
+      motivation,
+      role,
+      cpf,
+      region:AdministrativeRegions(name)
+    `)
     .eq('leader_id', profile.id)
     .eq('role', 'SUPPORTER')
     .order('created_at', { ascending: false });
